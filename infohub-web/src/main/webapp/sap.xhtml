@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+
+
+    <ui:composition template="./WEB-INF/template.xhtml">
+
+        <ui:define name="content">
+            <p:growl id="msgs" />
+            <h2>SAP Sync v.1( .xls format only )</h2>
+            
+            <p:panel id="panelSap">
+                <c:choose >
+                    <c:when test="#{sapController.sapInitiated}">
+                        <p>SAP Sync Already Initiated by</p>
+                        <h:outputText value="#{sapController.sapDesc}"></h:outputText>
+                    </c:when>
+                    <c:otherwise>
+                        <h:form id="formSap" enctype="multipart/form-data"  >
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <p:fileUpload  label="Click or Drag and drop here"   fileUploadListener="#{sapController.handleFileUpload}" 
+                                                   mode="advanced"   validator="#{sapController.validateFile}"
+                                                   multiple="true" update=":msgs @this" fileLimit="5"   allowTypes="/(\.|\/)(xls|XLS)$/" >
+                                    </p:fileUpload>
+                                    <br></br>
+                                    <p>Please Upload all the required 5 files to launch sap sync</p>
+                                    <h3>LOG:</h3>
+                                    <h:outputText escape="false"   style="font-size: small;font-weight: bold"  id="history" value="#{sapController.history}"></h:outputText>
+
+                                </div>
+                                <div class="col-sm-4">
+                                    <h:panelGrid width="100%" id="progressBar" >
+                                        <f:facet name = "header">
+                                            <h:outputText value = "Total File Uploaded: #{sapController.fileCount} out of 5"/>
+                                        </f:facet>
+                                        <p:growl id="upmsgs" />
+                                        PC1In:
+                                        <p:progressBar  id="pc1Progress" style="width:100%"  value="#{sapController.pc1InProgress}" labelTemplate="{value}%" styleClass="animated" global="false">
+                                        </p:progressBar>
+                                        PC1Out:
+                                        <p:progressBar  style="width:100%"  value="#{sapController.pc1OutProgress}" labelTemplate="{value}%" styleClass="animated" global="false">
+                                        </p:progressBar>
+                                        PIFIn:
+                                        <p:progressBar  style="width:100%"  value="#{sapController.pifInProgress}" labelTemplate="{value}%" styleClass="animated" global="false">
+                                        </p:progressBar>
+                                        PIFOut:
+                                        <p:progressBar  style="width:100%"  value="#{sapController.pifOutProgress}" labelTemplate="{value}%" styleClass="animated" global="false">
+                                        </p:progressBar>
+                                        Customer Sap:
+                                        <p:progressBar  style="width:100%"  value="#{sapController.customerProgress}" labelTemplate="{value}%" styleClass="animated" global="false">
+                                        </p:progressBar>
+                                    </h:panelGrid>
+
+                                </div>
+                            </div>
+                            <div class="row" style="padding: 5px">
+                                <div class="text-center">
+                                    <h:commandButton  id="buttonLunch" class="btn-danger btn" action="#{sapController.upload}" value="Launch Sap Sync" disabled="#{sapController.isLunch()}" ></h:commandButton>
+                                </div>
+
+                            </div>
+
+                            <div class="row text-center" style="padding-top: 20px">SAP Sync History</div>
+                            <div class="row" style="padding-top: 20px">
+                                <p:dataTable tableStyle="table-layout: auto" var="update" value="#{sapController.sapUpdates}"  emptyMessage="No update has been perfomed">
+                                    <p:column headerText="Update No." >
+                                        <h:outputText value="#{update.sapUpdateId}"></h:outputText>
+                                    </p:column>
+                                    <p:column headerText="Time" >
+                                        <h:outputText value="#{update.updateTime}"></h:outputText>
+                                    </p:column>
+                                    <p:column headerText="Performed By" >
+                                        <h:outputText value="#{update.userName}"></h:outputText>
+                                    </p:column>
+
+                                    <p:column headerText="Comment" >
+                                        <h:outputText value="#{update.comments}"></h:outputText>
+                                    </p:column>
+                                </p:dataTable>
+
+                            </div>
+
+                        </h:form>
+                    </c:otherwise>
+                </c:choose>
+            </p:panel>
+
+
+
+
+        </ui:define>
+
+    </ui:composition>
+
+</html>

@@ -1,0 +1,50 @@
+.five-percent{
+    width: 5%;
+    height: auto;
+}
+.ninety-percent{
+    width: 90%;
+    height: auto;
+}
+div.ui-row-toggler{
+    pointer-events: none;
+    
+}
+
+ .animated .ui-progressbar-value { 
+     
+        background-image: url("#{resource['images/pbar-ani.gif.xhtml']}"); 
+    }
+/*#upperFilter, #flipUpperFilter {
+    padding: 5px;
+    text-align: center;
+    background-color: #e5eecc;
+    border: solid 1px #c3c3c3;
+}*/
+
+#formPartner\:panelParnter_content{
+    margin: 0px;
+    padding: 0px;
+}
+
+.ui-tabs {
+    background: gainsboro;
+    border: #14A4FF solid 1px !important;
+}
+#nopadding{
+   margin: 0;
+   padding: 0;
+}
+#flipUpperFilter {
+    cursor: pointer;
+}
+#upperFilter {
+    /*padding: 5px;*/
+    display: none;
+}
+legend { 
+ 
+    font-size: small !important ;
+    margin-bottom: 5px !important;
+}
+

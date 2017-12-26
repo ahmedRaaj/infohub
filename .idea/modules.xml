@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/InfoHub.iml" filepath="$PROJECT_DIR$/InfoHub.iml" />
+      <module fileurl="file://$PROJECT_DIR$/infohub-entities/infohub-entities.iml" filepath="$PROJECT_DIR$/infohub-entities/infohub-entities.iml" />
+      <module fileurl="file://$PROJECT_DIR$/infohub-resources/infohub-resources.iml" filepath="$PROJECT_DIR$/infohub-resources/infohub-resources.iml" />
+      <module fileurl="file://$PROJECT_DIR$/infohub-sap-excel/infohub-sap-excel.iml" filepath="$PROJECT_DIR$/infohub-sap-excel/infohub-sap-excel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/infohub-service/infohub-service.iml" filepath="$PROJECT_DIR$/infohub-service/infohub-service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/infohub-web/infohub-web.iml" filepath="$PROJECT_DIR$/infohub-web/infohub-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/testview-entities/testview-entities.iml" filepath="$PROJECT_DIR$/testview-entities/testview-entities.iml" />
+      <module fileurl="file://$PROJECT_DIR$/testview-service/testview-service.iml" filepath="$PROJECT_DIR$/testview-service/testview-service.iml" />
+    </modules>
+  </component>
+</project>

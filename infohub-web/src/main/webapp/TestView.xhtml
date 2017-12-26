@@ -1,0 +1,162 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <body>
+
+        <ui:composition template="./WEB-INF/template.xhtml">
+
+            <ui:define name="content">
+
+                <div class="container-fluid">
+                    <h:form>
+                        <div class="row">
+
+
+                            <div class="col-sm-1 pull-left">
+                                <p:button outcome="/TestView.xhtml?faces-redirect=true" value="Reset" title="reset the filters"  class="pull-left"></p:button>
+                            </div>
+                            <div class="col-sm-3 pull-left" style="margin-left: -5px;">
+                                <p:selectOneRadio id="instance" value="#{lazyTestCaseModel.instanceFilter}" onclick="PF('tableTest').clearFilters();"  >
+                                    <f:selectItem  itemLabel="EUAP" itemValue="EUAP"  />
+                                    <f:selectItem itemLabel="NA" itemValue="NA" />
+                                    <f:selectItem itemLabel="MD" itemValue="MD" />
+                                    <p:ajax update="@form" />
+                                </p:selectOneRadio>
+
+                            </div>
+
+
+
+
+
+
+                        </div>
+
+
+                        <p:dataTable value="#{testCaseBean.testcasesList}" id="tabletestcases" var="testCase" 
+                                     paginator="true" rowsPerPageTemplate="5,10,20,50,100" 
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     lazy="true" rows="10" 
+                                     filterDelay="1000" editable="true"
+                                     widgetVar="tableTest"
+                                     style="font-size: x-small">
+
+                            <f:facet name="header">
+
+                                <div    class="col-sm-2 pull-right" style="padding-left: 30px">
+                                    <h:commandLink id="excel" title="Download Excel. [side-note: Please filter the testcases before clicking.Full list will take > 2 min to download]"  >
+                                        <p:graphicImage id="excelImage" name="images/excel.jpg" width="30px" height="30px" title="Download Excel. [side-note: Please filter the testcases before clicking.Full list will take > 2 min to download]" />
+                                        <p:dataExporter type="xls" target="tabletestcases" fileName="testcases"  />
+                                    </h:commandLink>
+                                </div>
+                            </f:facet>
+
+                            <p:ajax event="rowEdit" listener="#{testCaseBean.onRowEdit}"  />
+
+
+
+                            <p:column   exportable="false" width="7%" headerText="Edit" >
+                                <style>
+                                    .ui-helper-clearfix:after{
+                                        display: inline !important;
+                                    }
+                                </style>
+                                <a  href="file://mucsdn02.muc.infineon.com/webmethods/webMethods/Regression_Test/#{testCase.instance}/#{testCase.id}" target="_explorer.exe"  title="Open folder" style="margin-left:  -2px">
+                                    <i class="fa fa-folder-open small" aria-hidden="true" title="Open Folder"></i>
+                                </a>
+                                <a href="file://mucsdn02.muc.infineon.com/webmethods/webMethods/Regression_Test/#{testCase.instance}/#{testCase.id}/TestCase_#{testCase.id}.html" target="_blank" icon="fa fa-html5" style="margin: 2px" title="View html">
+                                    <i class="fa fa-html5 small" aria-hidden="true" title="HTML view"></i>
+                                </a>
+                                <p:rowEditor editTitle="Edit" saveTitle="Save" style="display:inline ; margin-left: 3px" cancelTitle="Cancel" />
+
+
+
+                            </p:column>
+                            <p:column  headerText="ID" width="5%" filterBy="#{testCase.id}" filterMatchMode="equals" filterStyle="width:100%">
+                                <h:outputText value="#{testCase.id}"/>
+                            </p:column>
+                            <p:column headerText="Instance" width="5%" >
+
+                                <h:outputText value="#{testCase.instance}"/>
+
+                            </p:column>
+                            <p:column headerText="Sold To" width="7%" filterBy="#{testCase.soldTo}" filterStyle="width:100%" >
+
+                                <h:outputText value="#{testCase.soldTo}"/>
+
+                            </p:column>
+                            <p:column headerText="Sender"  width="12%" filterBy="#{testCase.sender.corporationname}"  filterStyle="width:100%">
+                                <h:outputText  value="#{testCase.sender.corporationname}"/>  
+
+
+                            </p:column>
+                            <p:column headerText="Receiver" width="12%" filterBy=" #{testCase.receiver.corporationname}"  filterStyle="width:100%">
+                                <h:outputText value="#{testCase.receiver.corporationname}"/>
+                            </p:column>
+                            <p:column headerText="Doctype" filterBy=" #{testCase.doctype.typename}" filterStyle="width:100%">
+                                <h:outputText value="#{testCase.doctype.typename}"/>
+                            </p:column>
+                            <p:column headerText="Status" width="5%" filterBy="#{testCase.status}"  filterStyle="width:100%">
+
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{testCase.status}" /></f:facet>
+                                    <f:facet name="input">
+                                        <h:selectOneMenu value="#{testCase.status}" style="width:100%;color: black">
+                                            <f:selectItem   itemLabel="check" itemValue="check" />
+                                            <f:selectItem   itemLabel="run" itemValue="run" />
+                                            <f:selectItem   itemLabel="re-test" itemValue="re-test" />
+                                            <f:selectItem   itemLabel="ok" itemValue="ok" />
+                                            <f:selectItem   itemLabel="failed" itemValue="failed" />
+                                            <f:selectItem   itemLabel="re-test ok" itemValue="re-test ok" />
+                                            <f:selectItem   itemLabel="difference accepted" itemValue="difference accepted" />
+
+                                        </h:selectOneMenu>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+
+                            <p:column headerText="Assigned" width="5%" filterBy="#{testCase.assigned}"  filterStyle="width:100%" >
+
+                                <p:cellEditor>
+                                    <f:facet name="output"><h:outputText value="#{testCase.assigned}" /></f:facet>
+                                    <f:facet name="input">
+                                        <h:selectOneMenu value="#{testCase.assigned}" style="width:100%;color: black">
+                                            <f:selectItem   itemLabel="" itemValue="" />
+                                            <f:selectItem   itemLabel="upgrade team" itemValue="upgrade team" />
+                                            <f:selectItem   itemLabel="b2b manager" itemValue="b2b manager" />
+                                            <f:selectItem   itemLabel="closed" itemValue="closed" />
+
+                                        </h:selectOneMenu>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+                            <p:column headerText="B2B Manager" width="6%" filterBy="#{testCase.b2bManager}"  filterStyle="width:100%">
+                                <h:outputText  value="#{testCase.b2bManager}"/>
+                            </p:column>
+                            <p:column headerText="Description" width="30%"  filterBy="#{testCase.description}" filterStyle="width:100%">
+                                <p:cellEditor >
+                                    <f:facet name="output"><h:outputText  value="#{testCase.description}"  escape="false" /></f:facet>
+                                    <f:facet  name="input" >
+
+                                        <p:inputTextarea  style="width: 100%" value="#{testCase.description}" autoResize="true"></p:inputTextarea>
+                                    </f:facet>
+                                </p:cellEditor>
+                            </p:column>
+
+
+
+                        </p:dataTable>
+                    </h:form>
+                </div>
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

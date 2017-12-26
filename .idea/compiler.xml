@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="infohub-entities" />
+        <module name="infohub-resources" />
+        <module name="infohub-sap-excel" />
+        <module name="infohub-service" />
+        <module name="infohub-web" />
+        <module name="testview-entities" />
+        <module name="testview-service" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="InfoHub" target="1.5" />
+      <module name="infohub-entities" target="1.8" />
+      <module name="infohub-resources" target="1.8" />
+      <module name="infohub-sap-excel" target="1.8" />
+      <module name="infohub-service" target="1.8" />
+      <module name="infohub-web" target="1.8" />
+      <module name="testview-entities" target="1.8" />
+      <module name="testview-service" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

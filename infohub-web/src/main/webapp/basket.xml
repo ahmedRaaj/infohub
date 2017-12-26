@@ -1,0 +1,255 @@
+  public boolean validateFile(Workbook workbook, Map<String, Short> colMap) {
+        boolean valid = false;
+        direction = null;  //need to find directin from following
+        startingRow = null;
+        if (colMap == null) {
+            colMap = new HashMap<>();
+        }
+        Sheet datatypeSheet = workbook.getSheetAt(0);
+        try {
+            log.info("Starting validation: " + datatypeSheet.getSheetName());
+            Iterator<Row> iterator = datatypeSheet.iterator();
+            String value;
+            short indexRow = 0;
+            while (iterator.hasNext()) {
+                indexRow++;
+                Row currentRow = iterator.next();
+                for (short i = currentRow.getFirstCellNum(); i < currentRow.getLastCellNum(); i++) {
+                    if (currentRow.getCell(i) != null && currentRow.getCell(i).getCellTypeEnum() == CellType.STRING) {
+                        value = currentRow.getCell(i).getStringCellValue();
+                        if (direction == null) {
+                            if (value.equals("Output Mode") || value.equals(PC1OutColName.RCVPRN.name())) { //checking  file Direction. which is outbound
+                                direction = Direction.Outbound;
+                            } else if (value.equals("Processing") || value.equals(PC1InColName.SNDPRN.name())) {  //checking  which is Inbound
+                                direction = Direction.Inbound;
+                            } else if (value.equals("Customer")) {
+                                direction = Direction.Customer;
+                            }
+                        }
+
+                        if (direction != null) {
+                            if (direction == Direction.Customer) {
+
+                            } else {
+                                if (value.equals(PC1InColName.SNDPRN.name())
+                                        || value.equals(PC1OutColName.RCVPRN.name())
+                                        || value.equals(PIFColName.PartnerNo.toString())) {
+                                    if (startingRow == null) {
+                                        startingRow = (short) (currentRow.getRowNum() + 1); // set the starting row to process data
+                                    }
+                                    if (colMap.get(PC1InColName.SNDPRN.name()) == null) {
+                                        colMap.put(PC1InColName.SNDPRN.name(), i);
+                                    }
+                                } else if (value.equals(PC1InColName.SNDPRT.name())
+                                        || value.equals(PC1OutColName.RCVPRT.name())
+                                        || value.equals(PIFColName.PartnerType.toString())) {
+                                    if (colMap.get(PC1InColName.SNDPRT.name()) == null) {
+                                        colMap.put(PC1InColName.SNDPRT.name(), i);
+                                    }
+                                } else if (value.equals(PC1InColName.MESTYP.name())
+                                        || value.equals(PIFColName.MESTYP.toString())) {
+                                    if (colMap.get(PC1InColName.MESTYP.name()) == null) {
+                                        colMap.put(PC1InColName.MESTYP.name(), i);
+                                    }
+                                } else if (value.equals(PC1InColName.MESCOD.name()) || value.equals(PIFColName.MESCOD.toString())) {
+                                    if (colMap.get(PC1InColName.MESCOD.name()) == null) {
+                                        colMap.put(PC1InColName.MESCOD.name(), i);
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+
+                }
+
+                if (indexRow > 10 || colMap.size() == 4) {
+                    if (colMap.size() == 4 && direction != null) {
+                        valid = true;  // valid is true only when all col found and direction found. 
+                    }
+                    break;
+                }
+            }
+            for (Map.Entry<String, Short> entry : colMap.entrySet()) {
+                log.info(entry.getKey() + " " + entry.getValue());
+                if (entry.getValue() == null) {
+                    log.warning("Column Header index for " + entry.getKey() + "is not found");
+                    valid = false;   // all colum value is not there so valid is false;
+                }
+            }
+
+            log.info("File Name: " + datatypeSheet.getSheetName() + " ,Starting Row: " + startingRow + " and Direction: " + direction);
+
+        } catch (EncryptedDocumentException ex) {
+            log.log(Level.SEVERE, "Password Protected File", ex);
+            valid = false;
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "Exception in the File, cant read the file", ex);
+            valid = false;
+        } finally {
+            log.info("Finished validattion and  result is : " + valid);
+
+        }
+        return valid;
+
+    }
+
+
+
+
+
+
+<!-- <h:panelGrid columns="4">
+                        <h:outputLabel>PC1 In File: </h:outputLabel>
+                        <h:inputFile  id="pc1Input" value="#{sapController.pc1In}">
+                            <f:validator validatorId="SapFileValidator"/>
+                        </h:inputFile>
+                        <h:outputLabel>PC1 Out File: </h:outputLabel>
+                        <h:inputFile  id="pc1Output" value="#{sapController.pc1Out}"/>
+                        <h:outputLabel>PIF In File: </h:outputLabel>
+                        <h:inputFile id="pifInput" value="#{sapController.pifIn}"/>
+                        <h:outputLabel>PIF Out File: </h:outputLabel>
+                        <h:inputFile id="pifOutput" value="#{sapController.pifOut}"/>
+                        <h:outputLabel>Customer Record File: </h:outputLabel>
+                        <h:inputFile id="cutomerRecord" value="#{sapController.customer}"/>
+                    </h:panelGrid>-->
+
+
+
+
+
+<!--<p:panelGrid columns="9" class="small"  >
+    <p:commandButton icon="ui-icon-plus" actionListener="#{partnerController.onAddNewContact}" process="@parent" update="tableContact"/>
+    <h:outputText value="Name:" />
+    <h:inputText value="#{partnerController.selectedContact.contactName}"/>
+    <h:outputText value="Type" />
+    <h:inputText value="#{partnerController.selectedContact.contactType}"/>
+    <h:outputText value="Email" />
+    <h:inputText value="#{partnerController.selectedContact.email}"/>   
+    <h:outputText value="Phone" />
+    <h:inputText value="#{partnerController.selectedContact.telephone}"/>
+</p:panelGrid>-->
+
+
+
+<!--   <p:panelGrid columns="5">
+    <h:outputText value="TechId" />
+    <h:inputText value="#{partnerController.selectedTechnical.techid}"/>
+    <h:outputText value="BizProcs." />
+    <h:inputText value="#{partnerController.selectedTechnical.businessProcess}"/>
+    <p:commandButton actionListener="#{partnerController.onAddNewTechnical()}" process="@parent" update="tableTechnical"/>
+</p:panelGrid>-->
+
+
+
+    <!--                <p:tabView id="tabView">
+                                    <p:tab  title="Godfather Part I">
+                                        <p:panelGrid columns="2" rendered="#{partnerController.selected != null}">
+                                            <p:outputLabel value="Partner Number" for="partnerNumber" />
+                                            <p:inputText id="partnerNumber" value="#{partnerController.selected.partnerNumber}" title="#{bundle.CreatePartnerTitle_partnerNumber}" />
+                                            <p:outputLabel value="Partner Name" for="partnerName" />
+                                            <p:inputText id="partnerName" value="#{partnerController.selected.partnerName}" title="#{bundle.CreatePartnerTitle_partnerName}" />
+                                            <p:outputLabel value="Group" for="partnerGroup" />
+                                            <p:inputText id="partnerGroup" value="#{partnerController.selected.partnerGroup}" title="#{bundle.CreatePartnerTitle_partnerGroup}" />
+                                            <p:outputLabel value="Type" for="partnerType" />
+                                            <p:inputText id="partnerType" value="#{partnerController.selected.partnerType}" title="#{bundle.CreatePartnerTitle_partnerType}" />
+                                            <p:outputLabel value="Country" for="country" />
+                                            <p:inputText id="country" value="#{partnerController.selected.country}" title="#{bundle.CreatePartnerTitle_country}" />
+                                            <p:outputLabel value="City" for="city" />
+                                            <p:inputText id="city" value="#{partnerController.selected.city}" title="#{bundle.CreatePartnerTitle_city}" />
+                
+                                            <p:outputLabel value="Sales Org" for="salesOrg" />
+                                            <p:inputText id="salesOrg" value="#{partnerController.selected.salesOrg}" title="#{bundle.CreatePartnerTitle_salesOrg}" />
+                                            <p:outputLabel value="B2B Manager" for="b2bManager" />
+                                            <p:inputText id="b2bManager" value="#{partnerController.selected.b2bManager}" title="#{bundle.CreatePartnerTitle_b2bManager}" />
+                
+                                            <p:outputLabel value="#{bundle.CreatePartnerLabel_region}" for="region" />
+                                            <p:inputText id="region" value="#{partnerController.selected.region}" title="#{bundle.CreatePartnerTitle_region}" />
+                
+                                        </p:panelGrid>
+                
+                                    </p:tab>
+                                    <p:tab title="Godfather Part II">
+                                        <p:dataTable id="tableContact" editable="true" value="#{partnerController.selected.contacts}" var="contact">
+                                            <f:facet name="header">
+                                                Row Editing
+                                            </f:facet>
+                                            <p:column style="width:50px">
+                                                <p:commandButton value="del" process="@this" action="#{partnerController.onDeleteNewContact(contact)}" update="tableContact" >
+                                                </p:commandButton>
+                                            </p:column>
+                                            <p:column style="width:32px">
+                                                <p:rowEditor />
+                                            </p:column>
+                                            <p:column headerText="Id">
+                                                <p:cellEditor>
+                                                    <f:facet name="output"> <h:outputText value="#{contact.contactId}" /></f:facet>
+                                                    <f:facet name="input"><p:inputText  value="#{contact.contactId}" style="width:100%"/></f:facet>
+                                                </p:cellEditor>
+                                            </p:column>
+                
+                                            <p:column headerText="Contact Name">
+                                                <p:cellEditor>
+                                                    <f:facet name="output"> <h:outputText value="#{contact.contactName}" /></f:facet>
+                                                    <f:facet name="input"><p:inputText  value="#{contact.contactName}" style="width:100%"/></f:facet>
+                                                </p:cellEditor>
+                                            </p:column>
+                                            <p:column headerText="Contact Name">
+                                                <p:cellEditor>
+                                                    <f:facet name="output"> <h:outputText value="#{contact.contactType}" /></f:facet>
+                                                    <f:facet name="input"><p:inputText  value="#{contact.contactType}" style="width:100%"/></f:facet>
+                                                </p:cellEditor>
+                                            </p:column>
+                
+                                        </p:dataTable>
+                                        <p:panelGrid columns="5">
+                                            <h:outputText value="Name:" />
+                                            <h:inputText value="#{partnerController.selectedContact.contactName}"/>
+                                            <h:outputText value="Type" />
+                                            <h:inputText value="#{partnerController.selectedContact.contactType}"/>
+                                            <p:commandButton actionListener="#{partnerController.onAddNewContact}" process="@parent" update="tableContact"/>
+                                        </p:panelGrid>
+                                    </p:tab>
+                                    <p:tab title="Technical">
+                
+                                        <p:dataTable id="tableTechnical" editable="true" value="#{partnerController.selected.technicls}" var="technical">
+                                            <f:facet name="header">
+                                                Row Editing
+                                            </f:facet>
+                                            <p:column style="width:50px">
+                                                <p:commandButton value="del" process="@this" action="#{partnerController.doDeleteNewTechnical(technical)}" update="tableTechnical" >
+                                                </p:commandButton>
+                                            </p:column>
+                                            <p:column style="width:32px">
+                                                <p:rowEditor />
+                                            </p:column>
+                                            <p:column headerText="TechId">
+                                                <p:cellEditor>
+                                                    <f:facet name="output"> <h:outputText value="#{technical.techid}" /></f:facet>
+                                                    <f:facet name="input"><p:inputText  value="#{technical.techid}" style="width:100%"/></f:facet>
+                                                </p:cellEditor>
+                                            </p:column>
+                
+                                            <p:column headerText="Target Message">
+                                                <p:cellEditor>
+                                                    <f:facet name="output"> <h:outputText value="#{technical.targetMessage}" /></f:facet>
+                                                    <f:facet name="input"><p:inputText  value="#{technical.targetMessage}" style="width:100%"/></f:facet>
+                                                </p:cellEditor>
+                                            </p:column>
+                                            <p:column headerText="Bus. Process">
+                                                <p:cellEditor>
+                                                    <f:facet name="output"> <h:outputText value="#{technical.businessProcess}" /></f:facet>
+                                                    <f:facet name="input"><p:inputText  value="#{technical.businessProcess}" style="width:100%"/></f:facet>
+                                                </p:cellEditor>
+                                            </p:column>
+                
+                                        </p:dataTable>
+                                        <p:panelGrid columns="5">
+                                            <h:outputText value="TechId" />
+                                            <h:inputText value="#{partnerController.selectedTechnical.techid}"/>
+                                            <h:outputText value="BizProcs." />
+                                            <h:inputText value="#{partnerController.selectedTechnical.businessProcess}"/>
+                                            <p:commandButton actionListener="#{partnerController.onAddNewTechnical()}" process="@parent" update="tableTechnical"/>
+                                        </p:panelGrid>
+                                    </p:tab>
+                                </p:tabView>-->

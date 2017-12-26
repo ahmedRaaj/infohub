@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <body>
+
+        <ui:composition template="./WEB-INF/template.xhtml">
+
+
+            <ui:define name="content">
+
+                <p:growl id="msgs"/>
+                <h:form id="formUser">
+                    <p:dataTable value="#{adminController.users}" var="user" editable="true">
+                        <f:facet name="header">
+                            Users 
+                        </f:facet>
+
+                        <p:ajax event="rowEdit" listener="#{adminController.onRowEdit}" update=":msgs" />
+                        <p:ajax event="rowEditCancel" listener="#{adminController.onRowCancel}" update=":msgs" />
+
+                        <p:column>
+                            <p:rowEditor/>
+                        </p:column>
+
+
+                        <p:column headerText="Name">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{user.name}" /></f:facet>
+
+                                <f:facet name="input">
+                                    <h:inputText disabled="true"  value="#{user.name}" />
+                                </f:facet>
+
+                            </p:cellEditor>
+                        </p:column>
+
+                        <p:column headerText="Status">
+                            <p:cellEditor>
+                                <f:facet name="output">                                      
+                                    <p:selectBooleanButton disabled="true"  value="#{user.status}" onLabel="Active" offLabel="Inactive" style="width:60px" />
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:selectBooleanButton id="active" value="#{user.status}" onLabel="Active" offLabel="Inactive" style="width:60px" />
+
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+
+                        <p:column headerText="User Role">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{user.userRole}" /></f:facet>
+                                <f:facet name="input">
+                                    <h:selectOneMenu value="#{user.userRole}" style="width:100%">
+                                        <f:selectItems value="#{adminController.userRoles}" />
+                                    </h:selectOneMenu>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column headerText="Last Login">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{user.lastLoginDate}" /></f:facet>
+                                <f:facet name="input">
+                                    <h:inputText disabled="true"  value="#{user.lastLoginDate}" />
+
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+
+                        <p:column headerText="Log In Count">
+                            <p:cellEditor>
+                                <f:facet name="output"><h:outputText value="#{user.numberOfLogin}" /></f:facet>
+                                <f:facet name="input">
+                                    <h:inputText disabled="true"  value="#{user.numberOfLogin}" />
+
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                         
+
+                    </p:dataTable>
+                </h:form>
+
+
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

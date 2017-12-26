@@ -1,0 +1,458 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:jsf="http://xmlns.jcp.org/jsf"
+      xmlns:o="http://omnifaces.org/ui"
+      xmlns:of="http://omnifaces.org/functions">
+
+    <body>
+
+        <ui:composition template="./WEB-INF/template.xhtml">
+            <ui:define name="content">
+                <p:growl id="msgs" showDetail="true"/>
+                <h:form  id="formPartner" >
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                        <p:commandButton value="Yes"   type="button" styleClass="ui-confirmdialog-yes  btn-danger" icon="ui-icon-check" />
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </p:confirmDialog>
+                    <div class="row" style="padding-left:  10px">
+                        <!--<div id="flipUpperFilter" class="btn-info btn pull-right"><i class="fa fa-filter"></i> Sap and Technical Filters</div>-->
+                    </div>
+                    <div  id="upperFilter" jsf:id="upperFilter"  class="container-fluid" style="padding: 0"  >
+                        <div jsf:id="upperFilterContent"  class="row" style="padding: 5px">
+                            <div class="col-md-8">
+                                <p:fieldset  legend="Technical:" style="font-size: small; padding: 10px">
+                                    <h:panelGrid columns="6" cellpadding="2" >
+                                        <label>Source Message: </label>
+                                        <p:autoComplete      value="#{partnerFilter.sourceMessage}" completeMethod="#{partnerController.completeSourceMessage}"  queryDelay="600" maxResults="10" cache="true">
+                                        </p:autoComplete>
+
+                                        <label>Target Message: </label>
+                                        <p:autoComplete       value="#{partnerFilter.targetMessage}" completeMethod="#{partnerController.completeTargetMessage}" queryDelay="600" maxResults="10" cache="true">
+                                        </p:autoComplete>
+
+                                        <label>Filter Mode</label>
+                                        <p:selectOneMenu value="#{partnerFilter.filterCondition}">
+                                            <f:selectItem  itemValue="And" itemLabel="And" > And</f:selectItem>
+                                            <f:selectItem itemValue="Or" itemLabel="Or"> Or</f:selectItem>
+
+                                        </p:selectOneMenu>
+
+
+                                        <label>Connection: </label>
+                                        <p:autoComplete       value="#{partnerFilter.connection}" completeMethod="#{partnerController.completeConnections}" queryDelay="600" maxResults="10" cache="true">
+                                        </p:autoComplete>
+
+                                        <label>Standard: </label>
+                                        <p:autoComplete      value="#{partnerFilter.standerd}" completeMethod="#{partnerController.completeStandards}"  queryDelay="600" maxResults="10" cache="true">
+                                        </p:autoComplete>
+
+
+
+                                    </h:panelGrid>
+                                </p:fieldset>
+
+
+                            </div>
+                            <div class="col-md-4" style="padding-right: 0">
+                                <p:fieldset  legend="SAP:" style="font-size: small; padding: 10px">
+                                    <p:tooltip id="lastSapUpdateTooltip" for="lastSapUpdateCheckbox lastSapUpdateLabel" value="Select to filter last updated partners from SAP sync" position="top"/>
+                                    <p:tooltip id="missingItTooltip" for="missingITCheckbox missingITLabel" value="Select to filter parters with missing IT Contact" position="top"/>
+                                    <p:tooltip id="lastSapUpdate" for="manualSapCheckbox manualSapLabel" value="Select to filter manually added partners" position="top"/>
+
+                                    <h:panelGrid columns="6" cellpadding="5" cellspacing="5"  >
+                                        <p:selectBooleanCheckbox id="lastSapUpdateCheckbox" value="#{partnerFilter.lastSapUpdated}" style="padding-right:20px"/>
+                                        <p:outputLabel id="lastSapUpdateLabel"> :Last SAP Updated</p:outputLabel>
+
+                                        <p:selectBooleanCheckbox id="missingITCheckbox" value="#{partnerFilter.missingIT}" style="padding-right:20px" />
+                                        <p:outputLabel id="missingITLabel">:Missing IT Contact</p:outputLabel>
+
+                                        <p:selectBooleanCheckbox id="manualSapCheckbox" value="#{partnerFilter.nonSap}" style="padding: 5px"/>
+                                        <p:outputLabel id="manualSapLabel">:Manually added non SAP Partner</p:outputLabel>
+
+                                    </h:panelGrid>
+                                </p:fieldset>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="text-center">
+                                <p:tooltip id="toolTipBtnFilter" for="btnFilter" value="Click to perform advance filtering" position="top"/>
+                                <p:tooltip id="toolTipBtnReset" for="btnFilterReset" value="Reset all the advance filters and Reload Partners" position="top"/>
+
+                                <p:commandButton id="btnFilter" action="#{partnerController.performPartnerFilter}" oncomplete="PF('tablePartner').clearFilters()" process="@form" update="upperFilterContent layoutDiv " class="btn btn-info" value="Search"/>
+                                <p:commandButton id="btnFilterReset" actionListener="#{partnerController.resetPartnerFilter}" oncomplete="PF('tablePartner').clearFilters();$('#upperFilter').slideToggle('slow');" process="@form" update="upperFilterContent layoutDiv " class="btn btn-danger"  value="Reset"/>
+
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="row" jsf:id="layoutDiv"  style="padding-left:  10px">
+                        <p:panel id="panelParnter">
+                            <p:dataTable resizableColumns="true"     id="tablePartner" value="#{partnerController.items}" var="partner"
+                                         selectionMode="single" selection="#{partnerController.selected}"
+                                         filteredValue="#{partnerController.filteredPartners}"
+                                         paginator="true"
+                                         rowKey="#{partner.partnerId}"
+                                         rows="10" 
+                                         widgetVar="tablePartner"
+                                         rowIndexVar="rowIndex"
+                                         filterDelay="500"
+                                         rowExpandMode="single"
+                                         rowsPerPageTemplate="5,10,20,40,50,100,200" 
+                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} 
+                                         {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                         >
+
+
+
+
+
+
+                                <f:facet name="header">
+                                    <div jsf:id="pnlBtn" >
+                                        <p:tooltip  value="Partners" position="top"/>
+
+
+                                        <p:tooltip id="toolTipBtnFilterSecondaryReset" for="btnSecondaryFilterReset" value="Reset all the filters below" position="bottom"/>
+                                        <p:tooltip id="toolTipcreateButton" for="createButton" value="Create a new Partner" position="top" />
+
+                                        <p:tooltip id="toolTipExcel" for="excelImage" value="Export filtered partners in excel xls file" position="bottom"/>
+
+
+                                        <div id="flipUpperFilter"   style="padding: 0px"   class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left  pull-left">
+                                            <span class="ui-button-icon-left ui-icon ui-c fa fa-filter"/>
+
+
+                                            <span class="ui-button-text ui-c"> 
+
+                                                <c:choose>
+                                                    <c:when test="#{partnerFilter.count > 0}">
+                                                        Advance Filter  (#{partnerFilter.count})
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        Advance Filter 
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </span> 
+
+                                        </div>
+                                        <p:commandButton id="btnSecondaryFilterReset" action="#{partnerController.resetPartnerFilter()}" update=":formPartner   "  oncomplete="PF('tablePartner').clearFilters();"  style="color: red" class="pull-left btn-danger" icon="fa fa-undo"  value="Reset"/>
+
+                                        <p:commandButton id="createButton" icon="ui-icon-plus"   value="Create"    actionListener="#{partnerController.prepareCreate}" update="@form :PartnerCreateForm " oncomplete="PF('PartnerCreateDialog').show()" />
+
+
+                                        <div    class="pull-right" style="padding-left: 30px">
+                                            <h:commandLink id="excel"  >
+                                                <p:graphicImage id="excelImage" name="images/excel.jpg" width="30px" height="30px" />
+                                                <p:dataExporter type="xls" target="tablePartner" fileName="partners" postProcessor="#{partnerController.postProcessXLS}" />
+                                            </h:commandLink>
+                                        </div>
+
+
+
+                                    </div>
+                                </f:facet>
+
+                                <p:column width="7%">
+                                    <div  style="margin-left: -3px">
+                                        <p:commandButton   id="deleteButton" title="Delete"
+                                                           onclick="if (!confirm('Delete #{partner.partnerName}?')) {
+                                                                       event.stopPropagation();
+
+                                                                       return false
+                                                                   }" 
+                                                                   style="color: red;" class="btn-danger " icon="ui-icon-trash"   actionListener="#{partnerController.destroy(partner)}" oncomplete="PF('tablePartner').clearFilters();"    update="@form :msgs tablePartner">
+                                        </p:commandButton>
+
+
+                                        <p:commandButton id="copyButton" title="Copy" onclick="event.stopPropagation();"  icon="ui-icon-copy"  actionListener="#{partnerController.prepareCopyPartner(partner)}" update="@form :PartnerCreateDlg :msgs" oncomplete="PF('PartnerCreateDialog').show()" onerror="alert('Not Successful, Please Try again')" >
+                                        </p:commandButton>
+
+                                        <p:commandButton id="editButton" title="Edit" onclick="event.stopPropagation()"  icon="ui-icon-pencil"  actionListener="#{partnerController.prepareEditPartner(partner)}" update=":PartnerEditForm :DialogHeaderPartner" oncomplete="editPartner('PartnerEditDlg')" />
+
+                                    </div>
+
+                                </p:column>
+
+                                <p:column width="1.9%" style="border-right: none" visible="false"  selectRow="true" >
+                                    <p:rowToggler   transient="true" class="disabled"></p:rowToggler>
+                                </p:column>
+                                <p:column  headerText="Number" width="11%" sortBy="#{partner.partnerNumber}" filterBy="#{partner.partnerNumber}" filterMatchMode="contains" filterStyle="width:100%">
+                                    <h:outputText value="#{partner.partnerNumber}" />
+                                </p:column>
+
+                                <p:column headerText="Name" width="22%" sortBy="#{partner.partnerName}" filterBy="#{partner.partnerName}" filterMatchMode="contains" filterStyle="width:100%">
+                                    <h:outputText value="#{partner.partnerName}" />
+                                </p:column>
+                                <p:column headerText="Group" width="10%" sortBy="#{partner.partnerGroup}" filterBy="#{partner.partnerGroup}" filterStyle="width:100%">
+                                    <h:outputText value="#{partner.partnerGroup}" />
+                                </p:column>
+
+                                <p:column headerText="Type" width="10%" sortBy="#{partner.partnerType}" filterBy="#{partner.partnerType}" filterStyle="width:100%">
+                                    <h:outputText value="#{partner.partnerType}" />
+                                </p:column>
+                                <p:column headerText="Region" width="8%" sortBy="#{partner.region}"   filterBy="#{partner.region}" filterStyle="width:100%">
+
+                                    <h:outputText value="#{partner.region}" />
+                                </p:column>
+
+                                <p:column headerText="Country" width="10%" sortBy="#{partner.country}" filterBy="#{partner.country}" filterStyle="width:100%">
+                                    <h:outputText value="#{partner.country}" />
+                                </p:column>
+                                <p:column headerText="City" width="10%" sortBy="#{partner.city}" filterBy="#{partner.city}" filterStyle="width:100%">
+                                    <h:outputText value="#{partner.city}" />
+                                </p:column>
+
+                                <p:column headerText="B2B Manager" width="13%" sortBy="#{partner.b2bManager}" filterBy="#{partner.b2bManager}" filterMatchMode="contains" filterStyle="width:100%">
+                                    <h:outputText value="#{partner.b2bManager}" />
+                                </p:column>
+
+                                <p:rowExpansion    >
+                                    <p:tabView id="tabView" transient="true" >
+                                        <p:tab title="General" transient="true"   >
+
+                                            <div class="row" style="overflow-y: auto; height:320px;margin-left: -35px;margin-right: -15.4px;margin-top: -15px;margin-bottom: -20px">
+                                                <div class="col-lg-7">
+                                                    <p:panelGrid columns="2" style="width: 100%" columnClasses="twenty-percent,eighty-percent">
+
+                                                        <p:outputLabel  value="Partner Number" for="partnerNumber" />
+                                                        <p:outputLabel id="partnerNumber" value="#{partner.partnerNumber}" />
+                                                        <p:outputLabel value="Partner Name" for="partnerName" />
+                                                        <p:outputLabel id="partnerName" value="#{partner.partnerName}" />
+                                                        <p:outputLabel value="Group" for="partnerGroup" />
+                                                        <p:outputLabel id="partnerGroup" value="#{partner.partnerGroup}"  />
+                                                        <p:outputLabel value="Type" for="partnerType" />
+                                                        <p:outputLabel id="partnerType" value="#{partner.partnerType}" />
+                                                        <p:outputLabel value="Country" for="country" />
+                                                        <p:outputLabel id="country" value="#{partner.country}"  />
+                                                        <p:outputLabel value="City" for="city" />
+                                                        <p:outputLabel id="city" value="#{partner.city}"  />
+
+                                                        <p:outputLabel value="Sales Org" for="salesOrg" />
+                                                        <p:outputLabel id="salesOrg" value="#{partner.salesOrg}" />
+                                                        <p:outputLabel value="B2B Manager" for="b2bManager" />
+                                                        <p:outputLabel id="b2bManager" value="#{partner.b2bManager}"  />
+                                                        <p:outputLabel value="Update Time" for="updateTime" />
+                                                        <p:outputLabel id="updateTime" value="#{partner.updateTime}"  />
+
+                                                    </p:panelGrid>
+
+                                                </div>
+                                                <div jsf:id="commentDiv" class="col-lg-5" style="padding:0px">
+
+                                                    <p:dataTable  tableStyle="table-layout: auto;word-wrap: break-word" style="table-layout: fixed;word-wrap: break-word"  id="tableComments"  value="#{partnerBean.selectedCommentList}" var="comment" emptyMessage="No Comments" resizableColumns="true">
+                                                        <p:column sortBy="#{comment.updateTime}" width="30%"  headerText="Comment By"   style="font-size: 10px;padding: 1px">
+                                                            &nbsp;<b> #{comment.commentBy}</b> on <br/>&nbsp;&nbsp;#{comment.updateTime.toLocaleString()} 
+
+                                                        </p:column>
+                                                        <p:column width="70%"   headerText="Comment" style="padding: 1px" >
+                                                            <p:inputTextarea    value="#{comment.commentText}" rows="2" cols="50" readonly="true"   />
+
+                                                        </p:column>
+                                                    </p:dataTable>
+                                                    <p:panel  id="commentAddPanel"   >
+                                                        <div class="row">
+                                                            <div class="col-sm-10">
+                                                                <p:inputTextarea  rows="2"  style="width: 100%" class="disableEvent"  onkeydown="event.stopPropagation();"  id="inputComment" maxlength="1000" value="#{commentBean.commentText}"  />
+                                                               
+                                                            </div>
+                                                            <div class="col-sm-2 pull-left"  >
+                                                                <p:commandButton  icon="ui-icon-plus"    process="commentDiv" update="tableComments,inputComment, :msgs" id="btnAddNewComment" ajax="true" actionListener="#{partnerBean.onAddNewComment}" ></p:commandButton>
+                                                            </div>
+                                                        </div>
+
+                                                    </p:panel>
+
+                                                </div>
+                                            </div>
+
+
+
+                                            <br/>
+                                        </p:tab>
+                                        <p:tab  title="Technical" transient="true">
+                                            <div class="row" style="overflow-y: auto; height:320px;margin-left: -23px;margin-right: -10.4px;margin-top: -15px;margin-bottom: -10px">
+                                                <p:dataTable resizableColumns="true" tableStyle="table-layout: auto;"  style="font-size:12px;" id="tableTechnical" value="#{partner.technicls}" var="technical">
+                                                    <p:column headerText="Connections">
+                                                        <h:outputText value="#{technical.connectionType}" />
+                                                    </p:column>
+                                                    <p:column headerText="ID">
+                                                        <h:outputText value="#{technical.techid}" />
+                                                    </p:column>
+                                                    <p:column headerText="Business Proc.">
+                                                        <h:outputText value="#{technical.businessProcess}" />
+                                                    </p:column>
+                                                    <p:column headerText="Source message">
+                                                        <h:outputText value="#{technical.sourceMessage}" />
+                                                    </p:column>
+                                                    <p:column headerText="Target Message">
+                                                        <h:outputText value="#{technical.targetMessage}" />
+                                                    </p:column>
+                                                    <p:column headerText="Direction">
+                                                        <h:outputText value="#{technical.direction}" />
+                                                    </p:column>
+                                                    <p:column headerText="Standard">
+                                                        <h:outputText value="#{technical.standard}" />
+                                                    </p:column>
+                                                    <p:column headerText="TN From">
+                                                        <h:outputText value="#{technical.tnFrom}" />
+                                                    </p:column>
+                                                    <p:column headerText="TN To">
+                                                        <h:outputText value="#{technical.tnTo}" />
+                                                    </p:column>
+                                                    <p:column headerText="Pro">
+                                                        <h:outputText value="#{technical.priority}" />
+                                                    </p:column>
+                                                    <p:column headerText="Comments">
+                                                        <h:outputText value="#{technical.comments}" />
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </div>
+
+                                        </p:tab>
+                                        <p:tab title="Contacts" transient="true">
+                                            <div class="row" style="overflow-y: auto; height:320px;margin-left: -23px;margin-right: -10.4px;margin-top: -15px;margin-bottom: -10px">
+                                                <p:dataTable resizableColumns="true"   style="font-size:12px;" id="tableContact" tableStyle="table-layout: auto;" value="#{partner.contacts}" var="contact">
+                                                    <p:column headerText="Contact Name">
+                                                        <h:outputText value="#{contact.contactName}" />
+                                                    </p:column>
+                                                    <p:column headerText="Type">
+                                                        <h:outputText value="#{contact.contactType}" />
+                                                    </p:column>
+                                                    <p:column headerText="Email">
+                                                        <h:outputText value="#{contact.email}" />
+                                                    </p:column>
+                                                    <p:column headerText="Phone">
+                                                        <h:outputText value="#{contact.telephone}" />
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </div>
+
+
+                                        </p:tab>
+
+                                    </p:tabView>
+
+                                </p:rowExpansion>
+
+
+
+                            </p:dataTable>
+
+
+                        </p:panel>
+
+                        <script  type="text/javascript">
+                        $(document).ready(function () {
+                            rowExpension('tablePartner');
+                            $("#flipUpperFilter").off("click").on("click", function () {
+                                $("#upperFilter").slideToggle("slow");
+                            });
+
+                            $("#PartnerEditDlg").on("show", function () {
+                                $("body").addClass("modal-open");
+                            }).on("hidden", function () {
+                                $("body").removeClass("modal-open")
+                            });
+
+
+                        });
+
+                        //                                function rowExpension(dataTable) {
+                        //                                    //dataTable should be the widgetVar object
+                        //                                    var $this = PF(dataTable);
+                        //                                    console.log("Called + " + $this);
+                        //                                    var togglerSelector = '> tr > td > div.ui-row-toggler';
+                        //                                    $this.tbody.off('click.datatable-expansion', togglerSelector);
+                        //                                    $this.tbody.off('keydown.datatable-expansion', togglerSelector);
+                        //                                    $this.tbody.off('keyup.datatable-expansion', togglerSelector);
+                        //
+                        //                                    $this.tbody.off('keydown', $(this).find('div.ui-row-toggler'));
+                        //
+                        //
+                        //                                    //add the 'hand' when hovering on row
+                        //                                    $this.tbody.children('tr').css('cursor', 'pointer');
+                        //                                    $this.tbody
+                        //                                            .on('click.datatable-expansion', '.ui-datatable-selectable.ui-datatable-odd,.ui-datatable-selectable.ui-datatable-even', null, function () {
+                        //                                                //before expanding collapse all rows
+                        //                                                //toggle the current row the old toggler
+                        //                                                $this.toggleExpansion($(this).find('div.ui-row-toggler'));
+                        //                                            });
+                        //
+                        //                                    $this.tbody.off('keydown.datatable-expansion', 'tbody.ui-datatable-data > tr.ui-widget-content');
+                        //                                    $this.tbody.off('keydown', 'tbody.ui-datatable-data > tr.ui-widget-content');
+                        //
+                        //                                    $this.tbody.off('keyup', $(this).find('.ui-expanded-row-content.ui-widget-content'));
+                        //                                    $this.tbody.off('keydown.datatable-expansion', togglerSelector);
+                        //
+                        //
+                        //                                }
+
+                        function rowExpension(dataTable) {
+                            //dataTable should be the widgetVar object
+                            var $this = PF(dataTable);
+                            console.log("Called + " + $this);
+                            var togglerSelector = '> tr > td > div.ui-row-toggler';
+                            $this.tbody.off('click.datatable-expansion', togglerSelector);
+                            $this.tbody.off('keydown.datatable-expansion', togglerSelector);
+                            $this.tbody.off('keyup.datatable-expansion', togglerSelector);
+
+                            //add the 'hand' when hovering on row
+                            $this.tbody.children('tr').css('cursor', 'pointer');
+                            $this.tbody
+                                    .on('click.datatable-expansion', '.ui-datatable-selectable.ui-datatable-odd,.ui-datatable-selectable.ui-datatable-even', null, function () {
+                                        //before expanding collapse all rows
+                                        //toggle the current row the old toggler
+                                        $this.toggleExpansion($(this).find('div.ui-row-toggler'));
+                                    });
+
+                            $this.tbody.off('click.datatable-expansion', 'tr td:first-child');
+
+                        }
+
+                        function editPartner(widgetName) {
+
+                            var dialog = PF(widgetName);
+                            if (dialog === undefined) {
+                                dialog = PF('PartnerEditDialog');
+                            }
+
+                            dialog.show();
+                            //                                    var myDialog = document.getElementById(dialog.id);
+                            //                                    myDialog.style.height = '500px';
+                            //                                    myDialog.style.width = "600px";
+                            //                                    myDialog.style.minHeight = '500px';
+                            //                                    myDialog.style.minWidth = '600px';
+                        }
+
+                        function onclickno(event) {
+                            console.log(event);
+
+                            if (!confirm('Delete #{partner.partnerName}?')) {
+                                console.log('ok cancelling');
+                                event.stopPropagation();
+                                return false;
+
+                            }
+                        }
+                    </script> 
+                        
+                    </div>
+                    
+
+                </h:form>
+
+                <ui:include src="Create.xhtml"/>
+                <ui:include src="Edit.xhtml"/>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
