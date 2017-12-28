@@ -35,10 +35,10 @@ import org.infineon.infohub.service.activedirectory.ActiveDirectoryUser;
 import org.infineon.infohub.service.dao.MsgXrefFacadeREST;
 import org.infineon.infohub.service.dao.PartnerFacadeREST;
 import org.infineon.infohub.web.application.ApplicationBean;
-import org.infineon.infohub.web.print.ExcelPrint;
+import org.infineon.infohub.web.print.ExcelPrinter;
+import org.infineon.infohub.web.print.Printer;
 import org.infineon.infohub.web.util.JsfUtil;
 import org.infineon.infohub.web.util.JsfUtil.PersistAction;
-
 
 /**
  *
@@ -88,7 +88,7 @@ public class PartnerController implements Serializable {
     }
 
     public Contact getSelectedContact() {
-        if(selectedContact == null){
+        if (selectedContact == null) {
             initializeSelectedContact();
         }
         return selectedContact;
@@ -99,7 +99,7 @@ public class PartnerController implements Serializable {
     }
 
     public Technical getSelectedTechnical() {
-        if(selectedTechnical == null){
+        if (selectedTechnical == null) {
             initializeSelectedTechnical();
         }
         return selectedTechnical;
@@ -236,7 +236,7 @@ public class PartnerController implements Serializable {
     }
 
     public void onAddNewComment() {
-        if(selectedComment == null || selectedComment.getCommentText() == null ||selectedComment.getCommentText().length() < 1){
+        if (selectedComment == null || selectedComment.getCommentText() == null || selectedComment.getCommentText().length() < 1) {
             JsfUtil.addErrorMessage("Comment can not be empty");
             return;
         }
@@ -287,7 +287,6 @@ public class PartnerController implements Serializable {
             persist(PersistAction.CREATE, "PartnerUpdated");
             this.reset();
         }
-        
 
     }
 
@@ -299,8 +298,8 @@ public class PartnerController implements Serializable {
             selectedContact.setPartner(selected);
             selected.getContacts().add(selectedContact);
         }
-        
-         if(selectedTechnical != null && selectedTechnical.getSourceMessage() != null && selectedTechnical.getTargetMessage() != null){
+
+        if (selectedTechnical != null && selectedTechnical.getSourceMessage() != null && selectedTechnical.getTargetMessage() != null) {
             selectedTechnical.setPartner(selected);
             selected.getTechnicls().add(selectedTechnical);
             selectedTechnical = null;
@@ -322,8 +321,8 @@ public class PartnerController implements Serializable {
             selected.getContacts().add(selectedContact);
             selectedContact = null;
         }
-        
-        if(selectedTechnical != null && selectedTechnical.getSourceMessage() != null && selectedTechnical.getTargetMessage() != null){
+
+        if (selectedTechnical != null && selectedTechnical.getSourceMessage() != null && selectedTechnical.getTargetMessage() != null) {
             selectedTechnical.setPartner(selected);
             selected.getTechnicls().add(selectedTechnical);
             selectedTechnical = null;
@@ -337,8 +336,8 @@ public class PartnerController implements Serializable {
         this.selectedComment = null;
         this.selectedContact = null;
         this.selectedTechnical = null;
-         //   this.reset();
-        
+        //   this.reset();
+
     }
 
     public void destroy(Partner p) {
@@ -351,7 +350,7 @@ public class PartnerController implements Serializable {
             // selected = null; // Remove selection
             // items = null;    // Invalidate list of items to trigger re-query.
             reset(); // reset all member variable. 
-           
+
         }
     }
 
@@ -361,8 +360,6 @@ public class PartnerController implements Serializable {
         }
         return items;
     }
-
-  
 
     private void persist(PersistAction persistAction, String successMessage) {
         if (selected != null) {
@@ -478,23 +475,22 @@ public class PartnerController implements Serializable {
 //            ExcelPrint print = new ExcelPrint(p, wb);
 //            print.print();
 //        }
-        ExcelPrint print;
-        if (this.filteredPartners != null) {
-            print = new ExcelPrint(this.filteredPartners, wb);
-
-        } else {
-            print = new ExcelPrint(this.getItems(), wb);
-        }
         List<MsgXref> msgs = messageFacade.findAll();
         Map<String, String> msgMap = new HashMap<>();
         for (MsgXref msg : msgs) {
             String key = msg.getMsg().trim();
-            if (key.endsWith("-")) {
-                key = key.substring(0, key.length() - 1);
-            }
             msgMap.put(key, msg.getMsgdescr().trim());
         }
-        print.print(msgMap);
+        Printer print;
+
+        if (this.filteredPartners != null) {
+            print = new ExcelPrinter(this.filteredPartners, wb, msgMap);
+
+        } else {
+            print = new ExcelPrinter(this.getItems(), wb, msgMap);
+        }
+
+        print.print();
         HSSFCellStyle cellStyle = wb.createCellStyle();
         cellStyle.setFillForegroundColor(HSSFColor.GREEN.index);
         for (int i = 0; i < header.getPhysicalNumberOfCells(); i++) {

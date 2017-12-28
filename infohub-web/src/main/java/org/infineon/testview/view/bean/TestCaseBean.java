@@ -52,6 +52,7 @@ public class TestCaseBean extends AbstractBean implements Serializable {
         Testcase change = testCaseFacade.find(testCase.getId());
         change.setDescription(testCase.getDescription());
         change.setStatus(testCase.getStatus());
+        change.setAssigned(testCase.getAssigned());
         testCaseFacade.edit(change);
     }
 
