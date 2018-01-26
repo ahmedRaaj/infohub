@@ -65,3 +65,4 @@ fabric.properties
 /infohub-sap-excel/target/
 /testview-entities/target/
 /testview-service/target/
+/infohub-service/src/test/java/
