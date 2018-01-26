@@ -1,3 +1,48 @@
+body {
+    font-size:11px !important
+}
+.ui-tabs-panel {
+    padding: 2px !important;
+}
+/* This will be applied to all HTML in the page and not just PrimeFaces components*/
+
+root {
+    font-size: 11px;
+    /*font-family: 'Segoe UI', Arial, sans-serif;*/
+}
+/* We can adjust the font-size value if we wish to make PrimeFaces components stand out by making them larger or smaller so that they don't take up as much space on the page */
+
+.ui-widget {
+    /*font-family: 'Segoe UI', Arial, sans-serif;*/
+    font-size: 1em;
+}
+.ui-widget .ui-widget {
+    font-size: 1em;
+}
+.ui-widget input,
+.ui-widget select,
+.ui-widget textarea,
+.ui-widget button {
+    /*font-family: 'Segoe UI', Arial, sans-serif;*/
+    font-size: 0.8em;
+}
+
+
+.tabview{
+    height: 300px;
+}
+.ui-inputtext {
+    width: 100%;
+}
+
+
+
+
+
+
+
+
+
 .five-percent{
     width: 5%;
     height: auto;
@@ -9,6 +54,14 @@
 div.ui-row-toggler{
     pointer-events: none;
     
+}
+
+.colored {
+   background-color: #cceeff;
+   color: #FFFFFF;
+}
+.red-button{
+    button > span{background-color: red;color: red}
 }
 
  .animated .ui-progressbar-value { 

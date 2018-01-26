@@ -9,6 +9,18 @@
         <option value="$PROJECT_DIR$/pom.xml" />
       </list>
     </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/infohub-entities/pom.xml" />
+        <option value="$PROJECT_DIR$/infohub-resources/pom.xml" />
+        <option value="$PROJECT_DIR$/infohub-sap-excel/pom.xml" />
+        <option value="$PROJECT_DIR$/infohub-service/pom.xml" />
+        <option value="$PROJECT_DIR$/infohub-web/pom.xml" />
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/testview-entities/pom.xml" />
+        <option value="$PROJECT_DIR$/testview-service/pom.xml" />
+      </set>
+    </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/classes" />

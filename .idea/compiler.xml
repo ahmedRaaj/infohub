@@ -6,13 +6,6 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="infohub-entities" />
-        <module name="infohub-resources" />
-        <module name="infohub-sap-excel" />
-        <module name="infohub-service" />
-        <module name="infohub-web" />
-        <module name="testview-entities" />
-        <module name="testview-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
