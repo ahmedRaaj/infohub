@@ -1,0 +1,20 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+
+    <p:dialog id="partnerDialogue" widgetVar="partnerDialogue" resizable="true" modal="true"  minWidth="1024" width="1024"  minHeight="300" height="500" maximizable="true" closable="false"    appendTo="@(body)" header="#{partnerBackendBean.partner.partnerId eq null ? 'Create New':'Edit' }  Partner Profile">
+        <h:form>
+            <p:growl id="msgs" autoUpdate="true"/>
+            <div class="container-fluid">
+                <ui:include src="tabview.xhtml"></ui:include>
+            </div>
+        </h:form>
+    </p:dialog>
+
+
+</ui:composition>

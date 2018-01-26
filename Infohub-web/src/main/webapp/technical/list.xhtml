@@ -1,0 +1,124 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <div class="row">
+        <div class="col-md-12">
+            <p:dataTable  style="font-size:12px;" id="tableTechnical" tableStyle="table-layout: fixed;" value="#{technicalBackendBean.technicals}" var="technical" >
+                <p:column headerText="Delete" style="width: 50px" rendered="#{technicalBackendBean.edit}">
+                    <p:commandButton id="btnTechnicalDelete" class="btn btn-danger" icon="ui-icon-trash" process="tableTechnical" actionListener="#{technicalBackendBean.onDeleteTechnical(technical)}" update="tableTechnical" >
+                    </p:commandButton>
+                </p:column>
+                <p:column  headerText="Connection" style="padding: 0" >
+                    <p:autoComplete inputStyle="width:100%"  value="#{technical.connectionType}" completeMethod="#{technicalBackendBean.completeConnections}" dropdown="true" dropdownMode="current" rendered="#{technicalBackendBean.edit}" />
+                    <p:outputLabel value="#{technical.connectionType}" rendered="#{!technicalBackendBean.edit}"  />
+
+                </p:column>
+                <p:column  headerText="Id" style="padding: 0" >
+                    <p:inputText style="width:100%"  value="#{technical.techid}"   rendered="#{technicalBackendBean.edit}" />
+                    <p:outputLabel value="#{technical.techid}" style="width:100%" rendered="#{!technicalBackendBean.edit}"  />
+
+
+                </p:column>
+                <p:column  headerText="Bus Procs." style="padding: 0">
+                    <p:autoComplete inputStyle="width:100%" value="#{technical.businessProcess}"  completeMethod="#{partnerController.completeBussProecss}" maxResults="8" queryDelay="700" dropdown="true" dropdownMode="current" rendered="#{technicalBackendBean.edit}"  />
+                    <p:outputLabel value="#{technical.businessProcess}" style="width:100%" rendered="#{!technicalBackendBean.edit}"  />
+
+                </p:column>
+                <p:column  headerText="Source Messg." style="padding: 0" >
+                    <p:autoComplete inputStyle="width:100%"  value="#{technical.sourceMessage}" completeMethod="#{partnerController.completeSourceMessage}" cache="true" maxResults="8" queryDelay="700" dropdown="true" dropdownMode="current"  rendered="#{technicalBackendBean.edit}"/>
+                    <p:outputLabel value="#{technical.sourceMessage}" style="width:100%" rendered="#{!technicalBackendBean.edit}"  />
+
+                </p:column>
+                <p:column  headerText="Target Messg." style="padding: 0" >
+                    <p:autoComplete inputStyle="width:100%"  value="#{technical.targetMessage}" completeMethod="#{partnerController.completeTargetMessage}" cache="true" maxResults="8" queryDelay="700"  dropdown="true" dropdownMode="current" style="width:100%" rendered="#{technicalBackendBean.edit}"/>
+                    <p:outputLabel value="#{technical.targetMessage}" style="width:100%" rendered="#{!technicalBackendBean.edit}"  />
+
+                </p:column>
+                <p:column  headerText="Direction" style="padding: 0">
+                    <p:autoComplete inputStyle="width:100%"  value="#{technical.direction}" completeMethod="#{partnerController.completeDirection}" cache="true" maxResults="8" queryDelay="700" dropdown="true" dropdownMode="current" style="width:100%" rendered="#{technicalBackendBean.edit}"/>
+                    <p:outputLabel value="#{technical.direction}" rendered="#{!technicalBackendBean.edit}"  />
+
+                </p:column>
+                <p:column  headerText="Standard" style="padding: 0">
+                    <p:autoComplete inputStyle="width:100%"  value="#{technical.standard}" completeMethod="#{partnerController.completeStandards}" cache="true" maxResults="8" queryDelay="700" style="width:100%" dropdown="true" dropdownMode="current" rendered="#{technicalBackendBean.edit}"/>
+                    <p:outputLabel value="#{technical.standard}" style="width:100%" rendered="#{!technicalBackendBean.edit}"  />
+
+                </p:column>
+                <p:column style="padding: 0" headerText="TN From">
+                    <p:autoComplete inputStyle="width:100%" value="#{technical.tnFrom}" completeMethod="#{partnerController.completeTnFrom}" cache="true" maxResults="8" queryDelay="700" style="width:100%" dropdown="true" dropdownMode="current" rendered="#{technicalBackendBean.edit}"/>
+                    <p:outputLabel value="#{technical.tnFrom}" style="width:100%" rendered="#{!technicalBackendBean.edit}"  />
+
+                </p:column>
+                <p:column style="padding: 0" headerText="TN To">
+                    <p:autoComplete  inputStyle="width:100%"  value="#{technical.tnTo}" completeMethod="#{partnerController.completeTnTo}" cache="true" maxResults="8" queryDelay="700" style="width:100%" dropdown="true" dropdownMode="current" rendered="#{technicalBackendBean.edit}"/>
+                    <p:outputLabel value="#{technical.tnTo}" style="width:100%" rendered="#{!technicalBackendBean.edit}"  />
+
+                </p:column>
+                <p:column style="padding: 0" headerText="Prio">
+                    <p:inputText   value="#{technical.priority}" style="width:100%" rendered="#{technicalBackendBean.edit}"/>
+                    <p:outputLabel value="#{technical.priority}"  rendered="#{!technicalBackendBean.edit}"  />
+
+                </p:column>
+                <p:column style="padding: 0" headerText="Comments">
+                    <p:inputText  value="#{technical.comments}" style="width:100%" rendered="#{technicalBackendBean.edit}"/>
+                    <p:outputLabel value="#{technical.comments}"  rendered="#{!technicalBackendBean.edit}"  />
+
+                </p:column>
+            </p:dataTable>
+        </div>
+        <div class="col-md-12" >
+            <div class="ui-datatable-tablewrapper">
+                <p:panelGrid id="createTechPanel" rendered="#{technicalBackendBean.edit}" style="table-layout: fixed; width:100%">
+                    <p:row class="small" style="font-size:12px;">
+                        <p:column style="width: 50px"  >
+                            <p:commandButton id="btnAddNewTechnical" icon="ui-icon-plus" actionListener="#{technicalBackendBean.onAddNewTechnical}" process="createTechPanel" update="tableTechnical createTechPanel"/>
+                        </p:column>
+                        <p:column style="padding: 0">
+                            <p:autoComplete inputStyle="width:100%" id="connType" value="#{technicalBackendBean.technical.connectionType}"  completeMethod="#{technicalBackendBean.completeConnections}" dropdown="true" dropdownMode="current"  cache="true" maxResults="8" queryDelay="700" />
+                        </p:column>
+                        <p:column style="padding: 0" >
+                            <p:inputText style="width: 100%"  id="techId" value="#{technicalBackendBean.technical.techid}" />
+                        </p:column>
+                        <p:column style="padding: 0" >
+                            <p:autoComplete inputStyle="width:100%"   id="busProcess" value="#{technicalBackendBean.technical.businessProcess}"  completeMethod="#{technicalBackendBean.completeBussProecss}" cache="true" maxResults="8" queryDelay="700" dropdown="true" dropdownMode="current"/>
+                        </p:column>
+                        <p:column style="padding: 0">
+                            <p:autoComplete inputStyle="width:100%" id="sourceMsg" value="#{technicalBackendBean.technical.sourceMessage}"  completeMethod="#{technicalBackendBean.completeSourceMessage}"  dropdownMode="current"  maxResults="8" queryDelay="700"  dropdown="true" />
+                        </p:column>
+                        <p:column style="padding: 0" >
+                            <p:autoComplete inputStyle="width:100%" id="targetMsg" value="#{technicalBackendBean.technical.targetMessage}"  completeMethod="#{technicalBackendBean.completeTargetMessage}"  maxResults="8" queryDelay="700" dropdown="true" dropdownMode="current" />
+                        </p:column>
+                        <p:column style="padding: 0">
+                            <p:autoComplete inputStyle="width:100%" id="direction" value="#{technicalBackendBean.technical.direction}"  completeMethod="#{technicalBackendBean.completeDirection}" cache="true" maxResults="8" queryDelay="700" dropdown="true" dropdownMode="current" />
+                        </p:column>
+                        <p:column style="padding: 0">
+                            <p:autoComplete inputStyle="width:100%" id="standard" value="#{technicalBackendBean.technical.standard}"  completeMethod="#{technicalBackendBean.completeStandards}" cache="true" maxResults="8" queryDelay="700" dropdown="true" dropdownMode="current" />
+                        </p:column>
+                        <p:column style="padding: 0">
+                            <p:autoComplete inputStyle="width:100%"  id="tnFrom" value="#{technicalBackendBean.technical.tnFrom}"  completeMethod="#{technicalBackendBean.completeTnFrom}" cache="true" maxResults="8" queryDelay="700" dropdown="true" dropdownMode="current" />
+                        </p:column>
+                        <p:column style="padding: 0">
+                            <p:autoComplete inputStyle="width: 100%" id="tnTo" value="#{technicalBackendBean.technical.tnTo}"  completeMethod="#{technicalBackendBean.completeTnTo}" cache="true" maxResults="8" queryDelay="700" dropdown="true" dropdownMode="current"/>
+                        </p:column>
+                        <p:column style="padding: 0">
+                            <p:inputText  id="priority" style="width: 100%" value="#{technicalBackendBean.technical.priority}"/>
+                        </p:column>
+                        <p:column style="padding: 0">
+                            <p:inputText id="comments" style="width: 100%" value="#{technicalBackendBean.technical.comments}"/>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+</ui:composition>

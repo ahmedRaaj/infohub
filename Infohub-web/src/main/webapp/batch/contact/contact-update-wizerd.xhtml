@@ -1,0 +1,83 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <div class="row">
+        <div class="col-lg-10 center-block">
+
+            <p:wizard flowListener="#{excelBatchUpdateBeanContact.onFlowProcess}" class="small">
+                <p:tab id="contact" title="step 1: upload contact excel" titleStyle="font-size:8"  >
+                    <div class="row" style="padding-left: 10px; padding-top: 10px">
+                        <div class="col-lg-5" style="padding: 5px">
+                            <div class="page-header">
+                                <h4>Headers columns in excel:</h4>
+                            </div>
+                            <p:panelGrid columns="2" id="columns">
+                                <p:outputLabel value="Partner Number: "/>
+                                <p:inputText value="#{excelBatchUpdateBeanContact.contactsCols[0]}"/>
+
+                                <p:outputLabel value="Contact Name: "/>
+                                <p:inputText value="#{excelBatchUpdateBeanContact.contactsCols[1]}"/>
+
+                                <p:outputLabel value="Contact Type: "/>
+                                <p:inputText value="#{excelBatchUpdateBeanContact.contactsCols[2]}"/>
+
+                                <p:outputLabel value="Email: "/>
+                                <p:inputText value="#{excelBatchUpdateBeanContact.contactsCols[3]}"/>
+                                <p:outputLabel value="Phone: "/>
+                                <p:inputText value="#{excelBatchUpdateBeanContact.contactsCols[4]}"/>
+
+                                <p:outputLabel value="Tab Position: "/>
+                                <p:inputText value="#{excelBatchUpdateBeanContact.tabNo}"/>
+
+                                <p:outputLabel value="Update Columns: "/>
+                                <p:commandButton update="columns" process="columns" class="small"  icon="fa fa-refresh"/>
+                            </p:panelGrid>
+
+                        </div>
+                        <div class="col-lg-5" style="padding: 5px">
+                            <div class="page-header">
+                                <h4>Upload here:</h4>
+                            </div>
+                            <p:fileUpload fileUploadListener="#{excelBatchUpdateBeanContact.handleFileUploadInbound}" mode="advanced" dragDropSupport="true"
+                                          multiple="false" process="@form" update="@form" sizeLimit="900000" auto="true" fileLimit="1" allowTypes="/(\.|\/)(xls|xlsx|XLS|XLSX)$/" />
+
+                            <p:panel id="status">
+                                <p:dataTable value="#{excelBatchUpdateBeanContact.contactExcelName}" var="name" emptyMessage="No files uploaded">
+                                    <p:column headerText="FileName">
+                                        #{name}
+                                    </p:column>
+                                    <p:column headerText="Status">
+                                        Uploaded
+                                    </p:column>
+                                </p:dataTable>
+                            </p:panel>
+
+                        </div>
+                    </div>
+
+                </p:tab>
+
+                <p:tab class="page-header" id="update" title="final step: update" titleStyleClass="page-header" >
+                    <div class="row">
+                        <div class="col-lg-2 col-lg-offset-5">
+                            <p>
+                                This will update all the existing partners
+                                in infohub with the contacts found in the excel,
+                                Note only new contacts will be added if partner exist in the infohub. The contacts
+                                position could be random in excel with the partner number. 
+                            </p>
+                            <p:commandButton class="btn btn-danger" style="color:red;background-color: red" actionListener="#{excelBatchUpdateBeanContact.updatePartners}" icon="fa fa-refresh" value="Update Partners" >
+                            </p:commandButton>
+                        </div>
+                    </div>
+                </p:tab>
+
+            </p:wizard>
+        </div>
+
+    </div>
+</ui:composition>

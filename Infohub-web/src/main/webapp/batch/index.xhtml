@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <body>
+
+        <ui:composition template="./../WEB-INF/main-template.xhtml">
+
+            <ui:define name="content">
+                <div class="container-fluid">
+
+                    <div class="page-header">
+                        <h2>Batch update from Excels</h2>
+                    </div>
+                    <div class="row" style="padding-top: 3px;">
+                        <div class="col-lg-5" style="height: 300px;background-color: activeborder;margin: 15px">
+                            <div class="page-header">
+                                <h3>Batch update from contact excel file.</h3>
+                            </div>
+                            <div class="text-justify" >
+                                <h4>Uses: </h4>
+                                <p class="text-left">
+                                    Create new contacts for any partner in Infohub.
+                                    Only new contacts found in excel will be processed if the
+                                    partner is found in Infohub.This will not delete or update 
+                                    any existing contact from Infohub. 
+                                </p>
+                                <h4>Requirement: </h4>
+                                <p class="text-left">
+                                    This process requires 1 partner.xls downloaded from Infohub partner list page,
+                                    and process the contact tab only. 
+                                </p>
+                            </div>
+                            <div class="text-center">
+                                <p:commandButton  action="contact/update?faces-redirect=true" value="contact batch update" icon="fa fa-refresh"/>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-5" style="height: 300px;background-color: activeborder;margin: 15px">
+                            <div class="page-header">
+                                <h3>Batch update from SAP excel file.</h3>
+                            </div>
+
+                            <div class="text-justify" >
+                                <h4>Uses: </h4>
+                                <p class="text-left">
+                                    Create or update partner in Infohub with the technical 
+                                    and CLM contacts found in the excel. Only create new technical
+                                    and CLM if it doesn't exist in infohub. 
+                                </p>
+                                <h4>Requirement: </h4>
+                                <p class="text-left">
+                                    This process requires 2 inbound excel downloaded 
+                                    from SAP PIF and PC1 system, 2 outbound excel downloaded from SAP PIF and PC1 system, 
+                                    and 1 CLM excel downloaded form SAP PIF.
+                                </p>
+                            </div>
+                            <div class="text-center">
+                                <p:commandButton action="sap/update?faces-redirect=true" value="partner batch update" icon="fa fa-refresh"/>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

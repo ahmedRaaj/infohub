@@ -1,0 +1,71 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+        <!--                <div class="row pull-right small" jsf:id="editButtons" style="margin-right: 5px">
+                            <p:commandButton rendered="#{contactBackendBean.edit}" actionListener="#{contactBackendBean.save}" update="tableContact createPanelDiv @parent" process="@this" value="Save"/>
+                            <p:commandButton rendered="#{contactBackendBean.edit}" actionListener="#{contactBackendBean.cancel}" update="tableContact createPanelDiv @parent" process="@this" value="Cancel"/>
+                
+                            <p:commandButton rendered="#{!contactBackendBean.edit}" actionListener="#{contactBackendBean.edit}" update="tableContact createPanelDiv @parent" process="tableContact @this" value="Edit"/>
+                        </div>-->
+        <div class="row">
+            <div class="col-md-12">
+                <p:dataTable   style="font-size:12px;" id="tableContact" tableStyle="table-layout: auto;" value="#{contactBackendBean.contacts}" var="con" >
+                    <p:column width="2%" rendered="#{contactBackendBean.edit}">
+                        <p:commandButton id="btnDeleteContact" action="#{contactBackendBean.onDeleteContact(con)}" process="tableContact" update="tableContact"  icon="ui-icon-minus" class="btn-danger red-button" style="color:red;background-color: red;border-color: red" />
+                    </p:column>
+                    <p:column headerText="Contact Name">
+                        <h:outputText value="#{con.contactName}" rendered="#{!contactBackendBean.edit}"/>
+                        <h:inputText value="#{con.contactName}" rendered="#{contactBackendBean.edit}"/>
+                    </p:column>
+                    <p:column headerText="Type">
+                        <h:outputText value="#{con.contactType}" rendered="#{!contactBackendBean.edit}"/>
+
+                        <h:inputText value="#{con.contactType}" rendered="#{contactBackendBean.edit}" />
+                    </p:column>
+                    <p:column headerText="Email">
+                        <h:outputText value="#{con.email}" rendered="#{!contactBackendBean.edit}"/>
+
+                        <h:inputText value="#{con.email}" rendered="#{contactBackendBean.edit}"/>
+                    </p:column>
+                    <p:column headerText="Phone">
+                        <h:outputText value="#{con.telephone}" rendered="#{!contactBackendBean.edit}"/>
+
+                        <h:inputText value="#{con.telephone}" rendered="#{contactBackendBean.edit}" />
+                    </p:column>
+                </p:dataTable>
+            </div>
+            <div class="col-md-12" jsf:id="createPanelDiv">
+                <div class="ui-datatable-tablewrapper">
+                    <p:panelGrid id="createPanel" rendered="#{contactBackendBean.edit}" style="table-layout: auto; width:100%">
+                        <p:row class="small" style="font-size:12px;">
+                            <p:column width="2%"  style="width: 10px">
+                                <p:commandButton id="btnAddNewContact" icon="ui-icon-plus" actionListener="#{contactBackendBean.onAddNewContact}" process="createPanel" update="tableContact createPanel"/>
+                            </p:column>
+                            <p:column >
+                                <h:inputText value="#{contactBackendBean.contact.contactName}" />
+                            </p:column>
+                            <p:column >
+                                <h:inputText value="#{contactBackendBean.contact.contactType}" />
+                            </p:column>
+                            <p:column >
+                                <h:inputText value="#{contactBackendBean.contact.email}" />
+                            </p:column>
+                            <p:column >
+                                <h:inputText value="#{contactBackendBean.contact.telephone}" />
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </div>
+            </div>
+        </div>
+
+
+
+
+   
+</ui:composition>

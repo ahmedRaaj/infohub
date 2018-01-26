@@ -1,0 +1,37 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <div class="row">
+
+        <div class="col-lg-11">
+            <p:dataTable  tableStyle="table-layout: auto;word-wrap: break-word" style="table-layout: fixed;word-wrap: break-word"  id="tableComments"  value="#{commentBackendBean.comments}" var="comment" emptyMessage="No Comments" resizableColumns="true">
+                <p:column sortBy="#{comment.updateTime}" width="30%"  headerText="Comment By"   style="font-size: 10px;padding: 1px">
+                    <b> #{comment.commentBy}</b> on <br/>&#160;&#160;#{comment.updateTime.toLocaleString()} 
+
+                </p:column>
+                <p:column width="70%"   headerText="Comment" style="padding: 1px" >
+                    <p:inputTextarea    value="#{comment.commentText}" rows="2" cols="50" readonly="true"   />
+                </p:column>
+            </p:dataTable>
+        </div>
+        <div class="col-lg-11">
+            <p:panel  id="commentAddPanel" rendered="#{commentBackendBean.edit}"  >
+                <div class="row">
+                    <div class="col-sm-10">
+                        <p:inputTextarea  rows="2"  style="width: 100%" class="disableEvent"  onkeydown="event.stopPropagation();"  id="inputComment" maxlength="1000" value="#{commentBackendBean.comment.commentText}"  />
+
+                    </div>
+                    <div class="col-sm-2 pull-left"  >
+                        <p:commandButton  icon="ui-icon-plus"    process="commentAddPanel" update="tableComments,inputComment" id="btnAddNewComment" ajax="true" actionListener="#{commentBackendBean.onAddNewComment}" ></p:commandButton>
+                    </div>
+                </div>
+
+            </p:panel>
+        </div>
+
+    </div>   
+</ui:composition>

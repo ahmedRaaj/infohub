@@ -1,0 +1,73 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <div  id="upperFilter" jsf:id="upperFilter"  class="container-fluid" style="padding: 0"  >
+        <p:panel id="upperFilterContent"   style="padding: 5px">
+            <div class="row">
+                <div class="col-md-8">
+                    <p:fieldset  legend="Technical:" style="font-size: small; padding: 10px">
+                        <h:panelGrid columns="6" cellpadding="2" >
+                            <label>Source Message: </label>
+                            <p:autoComplete   dropdown="true"    value="#{partnerFilterBean.sourceMessage}" completeMethod="#{technicalBackendBean.completeSourceMessage}"  queryDelay="600" maxResults="10" cache="true">
+                            </p:autoComplete>
+
+                            <label>Target Message: </label>
+                            <p:autoComplete    dropdown="true"    value="#{partnerFilterBean.targetMessage}" completeMethod="#{technicalBackendBean.completeTargetMessage}" queryDelay="600" maxResults="10" cache="true">
+                            </p:autoComplete>
+
+                            <label>Filter Mode</label>
+                            <p:selectOneMenu value="#{partnerFilterBean.filterCondition}">
+                                <f:selectItem  itemValue="And" itemLabel="And" > And</f:selectItem>
+                                <f:selectItem itemValue="Or" itemLabel="Or"> Or</f:selectItem>
+
+                            </p:selectOneMenu>
+
+
+                            <label>Connection: </label>
+                            <p:autoComplete    dropdown="true"    value="#{partnerFilterBean.connection}" completeMethod="#{technicalBackendBean.completeConnections}" queryDelay="600" maxResults="10" cache="true">
+                            </p:autoComplete>
+
+                            <label>Standard: </label>
+                            <p:autoComplete  dropdown="true"    value="#{partnerFilterBean.standerd}" completeMethod="#{technicalBackendBean.completeStandards}"  queryDelay="600" maxResults="10" cache="true">
+                            </p:autoComplete>
+
+
+
+                        </h:panelGrid>
+                    </p:fieldset>
+
+
+                </div>
+                <div class="col-md-4" style="padding-right: 0">
+                    <p:fieldset  legend="SAP:" style="font-size: small; padding: 10px">
+                        <p:tooltip id="lastSapUpdateTooltip" for="lastSapUpdateCheckbox lastSapUpdateLabel" value="Select to filter last updated partners from SAP sync" position="top"/>
+                        <p:tooltip id="missingItTooltip" for="missingITCheckbox missingITLabel" value="Select to filter parters with missing IT Contact" position="top"/>
+
+                        <h:panelGrid columns="6" cellpadding="5" cellspacing="5"  >
+                            <p:selectBooleanCheckbox id="lastSapUpdateCheckbox" value="#{partnerFilterBean.lastSapUpdated}" style="padding-right:20px" title="Select to filter last updated partners from SAP sync"/>
+                            <p:outputLabel id="lastSapUpdateLabel"> :Last SAP Updated</p:outputLabel>
+
+                            <p:selectBooleanCheckbox id="missingITCheckbox" value="#{partnerFilterBean.missingIT}" style="padding-right:20px" title="Select to filter parters with missing IT Contact" />
+                            <p:outputLabel id="missingITLabel">:Missing IT Contact</p:outputLabel>
+
+                        </h:panelGrid>
+                    </p:fieldset>
+                </div>
+            </div>
+
+        </p:panel>
+
+        <div class="row">
+            <div class="text-center">
+
+                <p:commandButton id="btnFilter" actionListener="#{partnerBackendBean.performPartnerFilter}" oncomplete="PF('tablePartner').clearFilters();" process="@form" update="datatable" class="btn btn-info" value="Search" title="Click to perform advance filtering"/>
+                <p:commandButton id="btnFilterReset" actionListener="#{partnerBackendBean.resetPartnerFilter}" oncomplete="PF('tablePartner').clearFilters();" process="@form" update="upperFilterContent datatable" class="btn btn-danger"  value="Reset"  title="Reset all the advance filters and Reload Partners"/>
+
+            </div>
+        </div>
+    </div>
+</ui:composition>

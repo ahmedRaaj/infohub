@@ -1,0 +1,200 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <div class="row" jsf:id="datatable">
+        
+        <div>
+            <ui:include src="filter.xhtml"/>
+        </div>
+
+        <p:dataTable resizableColumns="true"     id="tablePartner" value="#{partnerBackendBean.partners}" var="partner"
+                     selectionMode="single" selection="#{partnerBackendBean.partner}"
+                     filteredValue="#{partnerBackendBean.filteredPartners}"
+                     paginator="true"
+                     rowKey="#{partner.partnerId}"
+                     rows="10" 
+                     widgetVar="tablePartner"
+                     rowIndexVar="rowIndex"
+                     filterDelay="500"
+                     rowExpandMode="single"
+                     rowsPerPageTemplate="5,10,20,40,50,100,200" 
+                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} 
+                     {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                     >
+
+            <f:facet name="header">
+                <div jsf:id="pnlBtn" >
+
+                    <div id="flipUpperFilter"   style="padding: 0px"   class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left  pull-left">
+                        <span class="ui-button-icon-left ui-icon ui-c fa fa-filter"/>
+                        <span class="ui-button-text ui-c"> 
+                            <c:choose>
+                                <c:when test="#{partnerFilter.count > 0}">
+                                    Advance Filter  (#{partnerFilter.count})
+                                </c:when>
+                                <c:otherwise>
+                                    Advance Filter 
+                                </c:otherwise>
+                            </c:choose>
+                        </span> 
+                    </div>
+                    <p:commandButton id="btnSecondaryFilterReset" actionListener="#{partnerBackendBean.resetPartnerFilter}" update=":formPartner"  oncomplete="PF('tablePartner').clearFilters();"  style="color: red" class="pull-left btn-danger" icon="fa fa-undo"  value="Reset" title="Reset all the filters below"/>
+
+                    <p:commandButton id="createButton" icon="ui-icon-plus"      actionListener="#{partnerBackendBean.prepareCreate}"  oncomplete="PF('partnerDialogue').show()" update="partnerDialogue" title="Create a new Partner" />
+
+
+                    <div    class="pull-right" style="padding-left: 30px">
+                        <h:commandLink id="excel" title="Export filtered partners in excel xls file" >
+                            <p:graphicImage id="excelImage" name="images/excel.jpg" width="30px" height="30px" />
+                            <p:dataExporter type="xls" target="tablePartner" fileName="partners" postProcessor="#{partnerBackendBean.postProcessXLS}" />
+                        </h:commandLink>
+                    </div>
+
+
+
+                </div>
+            </f:facet>
+
+            <p:column width="8%">
+                <div  style="margin-left: -3px">
+                    <p:commandButton   id="deleteButton" title="Delete"
+                                       onclick="if (!confirm('Delete #{partner.partnerName}?')) {
+                                                   event.stopPropagation();
+                                                   return false
+                                               }" 
+                                       style="color: red;" class="btn-danger small " icon="ui-icon-trash"   actionListener="#{partnerBackendBean.destroy(partner.partnerId)}" oncomplete="PF('tablePartner').clearFilters();"    update="@form">
+                    </p:commandButton>
+                    <p:commandButton class="copyButton small"  icon="ui-icon-copy" title="copy"  onclick="event.stopPropagation();"  actionListener="#{partnerBackendBean.prepareCopy(partner.partnerId)}" update="partnerDialogue" oncomplete="PF('partnerDialogue').show()"></p:commandButton>
+                    <p:commandButton class="editButton small" icon="ui-icon-pencil" title="edit" onclick="event.stopPropagation();"  actionListener="#{partnerBackendBean.prepareEdit(partner.partnerId)}" update="partnerDialogue" oncomplete="PF('partnerDialogue').show()"></p:commandButton>
+                </div>
+
+            </p:column>
+
+            <p:column width="1.9%" style="border-right: none" visible="false"  selectRow="true" >
+                <p:rowToggler   transient="true" class="disabled"></p:rowToggler>
+            </p:column>
+            <p:column  headerText="Number" width="11%" sortBy="#{partner.partnerNumber}" filterBy="#{partner.partnerNumber}" filterMatchMode="contains" filterStyle="width:100%">
+                <h:outputText value="#{partner.partnerNumber}" />
+            </p:column>
+
+            <p:column headerText="Name" width="22%" sortBy="#{partner.partnerName}" filterBy="#{partner.partnerName}" filterMatchMode="contains" filterStyle="width:100%">
+                <h:outputText value="#{partner.partnerName}" />
+            </p:column>
+            <p:column headerText="Group" width="10%" sortBy="#{partner.partnerGroup}" filterBy="#{partner.partnerGroup}" filterStyle="width:100%">
+                <h:outputText value="#{partner.partnerGroup}" />
+            </p:column>
+
+            <p:column headerText="Type" width="10%" sortBy="#{partner.partnerType}" filterBy="#{partner.partnerType}" filterStyle="width:100%">
+                <h:outputText value="#{partner.partnerType}" />
+            </p:column>
+            <p:column headerText="Region" width="8%" sortBy="#{partner.region}"   filterBy="#{partner.region}" filterStyle="width:100%">
+
+                <h:outputText value="#{partner.region}" />
+            </p:column>
+
+            <p:column headerText="Country" width="10%" sortBy="#{partner.country}" filterBy="#{partner.country}" filterStyle="width:100%">
+                <h:outputText value="#{partner.country}" />
+            </p:column>
+            <p:column headerText="City" width="10%" sortBy="#{partner.city}" filterBy="#{partner.city}" filterStyle="width:100%">
+                <h:outputText value="#{partner.city}" />
+            </p:column>
+
+            <p:column headerText="B2B Manager" width="13%" sortBy="#{partner.b2bManager}" filterBy="#{partner.b2bManager}" filterMatchMode="contains" filterStyle="width:100%">
+                <h:outputText value="#{partner.b2bManager}" />
+            </p:column>
+
+            <p:rowExpansion>
+                <ui:include src="tabview.xhtml"/>
+            </p:rowExpansion>
+
+
+
+        </p:dataTable>
+        
+              <script  type="text/javascript" >
+            $(document).ready(function () {
+                rowExpension('tablePartner');
+                $("#flipUpperFilter").off("click").on("click", function () {
+                    $("#upperFilter").slideToggle("slow");
+                });
+
+                $("#PartnerEditDlg").on("show", function () {
+                    $("body").addClass("modal-open");
+                }).on("hidden", function () {
+                    $("body").removeClass("modal-open")
+                });
+
+
+            });
+
+            function rowExpension(dataTable) {
+                //dataTable should be the widgetVar object
+                var $this = PF(dataTable);
+                var count = 0;
+                console.log("Called + " + $this);
+                var togglerSelector = '> tr > td > div.ui-row-toggler';
+                $this.tbody.off('click.datatable-expansion', togglerSelector);
+                $this.tbody.off('keydown.datatable-expansion', togglerSelector);
+                $this.tbody.off('keyup.datatable-expansion', togglerSelector);
+
+                //add the 'hand' when hovering on row
+                $this.tbody.children('tr').css('cursor', 'pointer');
+                $this.tbody
+                        .on('click.datatable-expansion', '.ui-datatable-selectable.ui-datatable-odd,.ui-datatable-selectable.ui-datatable-even', null, function () {
+                            //before expanding collapse all rows
+                            //toggle the current row the old toggler
+                            $this.toggleExpansion($(this).find('div.ui-row-toggler'));
+                            console.log("count + " + count++);
+                        });
+
+                $this.tbody.off('click.datatable-expansion', 'tr td:first-child');
+
+            }
+
+            function expan(dataTable, button) {
+                var $this = PF(dataTable);
+                $this.toggleExpansion($(this).find('div.ui-row-toggler'));
+
+            }
+
+
+            function editPartner(widgetName) {
+
+                var dialog = PF(widgetName);
+                if (dialog === undefined) {
+                    dialog = PF('PartnerEditDialog');
+                }
+
+                dialog.show();
+                //                                    var myDialog = document.getElementById(dialog.id);
+                //                                    myDialog.style.height = '500px';
+                //                                    myDialog.style.width = "600px";
+                //                                    myDialog.style.minHeight = '500px';
+                //                                    myDialog.style.minWidth = '600px';
+            }
+
+            function onclickno(event) {
+                console.log(event);
+
+                if (!confirm('Delete #{partner.partnerName}?')) {
+                    console.log('ok cancelling');
+                    event.stopPropagation();
+                    return false;
+
+                }
+            }
+        </script> 
+
+    </div>
+
+    
+
+
+
+</ui:composition>
+

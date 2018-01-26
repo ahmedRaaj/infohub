@@ -1,0 +1,36 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <div class="row">
+        <p:tabView id="tabView" >
+            <p:tab title="General"  >
+                <div class="tabview">
+                    <ui:include src="../partner/edit.xhtml"/>
+                </div>
+            </p:tab>
+            <p:tab  title="Technical" >
+                <div class="tabview">
+                    <ui:include src="../technical/list.xhtml"/>
+                </div>
+
+            </p:tab>
+            <p:tab title="Contacts" transient="true">
+                <div class="tabview">
+                    <ui:include src="../contact/list.xhtml"/>
+                </div>
+            </p:tab>
+        </p:tabView>
+    </div>
+    <div class="row" >
+        <div class="pull-right" style="margin-right: 30px"  >
+            <p:commandButton value="save" rendered="#{partnerBackendBean.edit}" actionListener="#{partnerBackendBean.save}" update=":formPartner"  oncomplete="handleSubmit(args, 'partnerDialogue'); PF('tablePartner').filter(); "></p:commandButton>
+            <p:commandButton value="cancel" rendered="#{partnerBackendBean.edit}"  onclick="PF('partnerDialogue').hide()" actionListener="#{partnerBackendBean.cancel}" update="formPartner:msgs" immediate="true"  > </p:commandButton>
+        </div>
+    </div>
+
+</ui:composition>

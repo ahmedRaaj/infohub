@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:cc="http://xmlns.jcp.org/jsf/composite"
+      xmlns:p="http://primefaces.org/ui">
+
+    <!-- INTERFACE -->
+    <cc:interface>
+        <cc:attribute name="tabTitle" ></cc:attribute>
+        <cc:attribute name="tabId"></cc:attribute>
+    </cc:interface>
+
+    <!-- IMPLEMENTATION -->
+    <cc:implementation>
+        <p:tab id="fdsa" title="asdfa">
+            <div class="row">
+                <div class="col-lg-6">
+                    <h4>Columns mapping in Excel:</h4>
+                    <p:panelGrid columns="2" id="columns">
+                        <p:outputLabel value="Partner Number: "/>
+                        <p:inputText value="#{excelBatchUpdateBeanSAP.inboundCols[0]}"/>
+
+                        <p:outputLabel value="Partner Type: "/>
+                        <p:inputText value="#{excelBatchUpdateBeanSAP.inboundCols[1]}"/>
+
+                        <p:outputLabel value="Message Type: "/>
+                        <p:inputText value="#{excelBatchUpdateBeanSAP.inboundCols[2]}"/>
+
+                        <p:outputLabel value="Message Code: "/>
+                        <p:inputText value="#{excelBatchUpdateBeanSAP.inboundCols[3]}"/>
+                        <p:commandButton update="columns" process="columns" value="Update"/>
+                    </p:panelGrid>
+
+                </div>
+                <div class="col-lg-6">
+                    <p:fileUpload fileUploadListener="#{excelBatchUpdateBeanSAP.handleFileUploadInbound}" mode="advanced" dragDropSupport="true"
+                                  multiple="true" update="@form" sizeLimit="100000" auto="true" fileLimit="2" allowTypes="/(\.|\/)(xls|xlsx|XLS|XLSX)$/" />
+                    <h4>
+                        <p:panel id="status">
+                            <p:dataTable value="#{excelBatchUpdateBeanSAP.inputExcelNames}" var="name" emptyMessage="No files uploaded">
+                                <p:column headerText="FileName">
+                                    #{name}
+                                </p:column>
+                                <p:column headerText="Status">
+                                    Uploaded
+                                </p:column>
+                            </p:dataTable>
+                        </p:panel>
+                    </h4>
+                </div>
+            </div>
+
+        </p:tab>
+    </cc:implementation>
+</html>
