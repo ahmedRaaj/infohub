@@ -6,10 +6,6 @@
 package org.infineon.infohub.entities;
 
 import java.io.Serializable;
-import java.math.BigInteger;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 import javax.inject.Named;
@@ -23,8 +19,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -47,6 +41,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Comment.findByCommentText", query = "SELECT c FROM Comment c WHERE c.commentText = :commentText")
     , @NamedQuery(name = "Comment.findByRecstat", query = "SELECT c FROM Comment c WHERE c.status = :status")
     , @NamedQuery(name = "Comment.findByUpdateTime", query = "SELECT c FROM Comment c WHERE c.updateTime = :updateTime")
+    , @NamedQuery(name = "Comment.findByPartner", query = "SELECT c FROM Comment c WHERE c.partner = :partner")
     , @NamedQuery(name = "Comment.findByCommentId", query = "SELECT c FROM Comment c WHERE c.commentId = :commentId")})
 public class Comment implements Serializable {
 
@@ -79,7 +74,6 @@ public class Comment implements Serializable {
     public Comment() {
 
         this.status = true;
-        
 
     }
 
@@ -162,18 +156,17 @@ public class Comment implements Serializable {
         if (!Objects.equals(this.commentId, other.commentId)) {
             return false;
         }
+
+        if (Objects.equals(this.commentId, other.commentId)) {
+            if (this.commentId != null && other.commentId != null) {
+                return true;
+            } else {
+                return this == obj;
+            }
+        }
         return true;
     }
 
-    public Comment clone() {
-        Comment c = new Comment();
-        c.commentBy = commentBy;
-        c.commentText = commentText;
-        c.status = status;
-        c.updateTime = updateTime;
-
-        return c;
-    }
-
+   
 
 }

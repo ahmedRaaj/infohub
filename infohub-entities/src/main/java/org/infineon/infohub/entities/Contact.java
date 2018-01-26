@@ -46,8 +46,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     , @NamedQuery(name = "Contact.findByStatus", query = "SELECT c FROM Contact c WHERE c.status = :status")
     , @NamedQuery(name = "Contact.findByUpdateTime", query = "SELECT c FROM Contact c WHERE c.updateTime = :updateTime")
     , @NamedQuery(name = "Contact.findByPartner", query = "SELECT c FROM Contact c WHERE c.partner = :partner")
-            , @NamedQuery(name = "Contact.findDistType", query = "SELECT DISTINCT c.contactType FROM Contact c ")
-
+    , @NamedQuery(name = "Contact.findDistType", query = "SELECT DISTINCT c.contactType FROM Contact c ")
+    , @NamedQuery(name = "Contact.countByPartner", query = "SELECT COUNT(c)  FROM Contact c where c.partner = :partner")
     , @NamedQuery(name = "Contact.findByContactId", query = "SELECT c FROM Contact c WHERE c.contactId = :contactId")})
 public class Contact implements Serializable {
 
@@ -83,15 +83,28 @@ public class Contact implements Serializable {
     private Partner partner;
 
     public Contact() {
-//        this.contactId = new SessionIdentifierGenerator().nextSessionId();
-//        this.status = true;
-//        this.updateTime = new Date();
+    }
 
+    //copy constructor
+    public Contact(Contact copy) {
+        this.contactName = copy.contactName;
+        this.contactType = copy.contactType;
+        this.email = copy.email;
+        this.status = true;
+        this.telephone = copy.telephone;
     }
 
     public Contact(String contactId) {
         this();
         this.contactId = contactId;
+    }
+
+    public Contact(String contactName, String contactType, String email, String telephone) {
+        this.contactName = contactName;
+        this.contactType = contactType;
+        this.email = email;
+        this.telephone = telephone;
+        this.updateTime = new Date();
     }
 
     public String getContactName() {
@@ -161,7 +174,7 @@ public class Contact implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 73 * hash + Objects.hashCode(this.contactId);
+        hash = 73 * hash + Objects.hashCode(this.contactId) + Objects.hash(this.contactName, this.contactType, this.email);
         return hash;
     }
 
@@ -180,27 +193,38 @@ public class Contact implements Serializable {
         if (!Objects.equals(this.contactId, other.contactId)) {
             return false;
         }
+
+        if (Objects.equals(this.contactId, other.contactId)) {
+            if (this.contactId != null && other.contactId != null) {
+                return true;
+            } else {
+                return this == obj;
+            }
+        }
         return true;
+    }
+    
+    public boolean equalsByNameAndType(Contact obj){   // 
+        if(this.contactName == null || obj.contactName == null) return false;
+        if(this.contactType == null || obj.contactType == null) return false;
+        
+        if(this.contactName.equalsIgnoreCase(obj.contactName) && this.contactType.equalsIgnoreCase(obj.contactType)){
+            return true;
+        }
+        return false;
+        
     }
 
     @Override
     public String toString() {
-        return "Contact ID: " + this.getContactId(); //To change body of generated methods, choose Tools | Templates.
+        return "Contact ID: " + this.getContactId() + " Name: " + this.contactName; //To change body of generated methods, choose Tools | Templates.
     }
 
-    public Contact clone() {
-        Contact c = new Contact();
-        c.contactName = contactName;
-        c.contactType = contactType;
-        c.email = email;
-        c.status = true;
-        c.telephone = telephone;
-        return c;
-    }
-    
+   
+
     @PrePersist
     public void setLastUpdate() {
-        this.setUpdateTime(new Date() );
+        this.setUpdateTime(new Date());
         this.status = true;
     }
 

@@ -8,6 +8,7 @@
     <shared-cache-mode>NONE</shared-cache-mode>
     <properties>
       <property name="eclipselink.logging.level" value="ALL"/>
+       <property name="eclipselink.logging.parameters" value="true"/>
     </properties>
   </persistence-unit>
 </persistence>

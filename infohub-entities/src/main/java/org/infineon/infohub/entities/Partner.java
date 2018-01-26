@@ -6,18 +6,16 @@
 package org.infineon.infohub.entities;
 
 import java.io.Serializable;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import javax.inject.Named;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,13 +29,10 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import org.infineon.infohub.sap.excel.model.Direction;
-import org.infineon.infohub.sap.excel.model.SapPartner;
-import org.infineon.infohub.sap.excel.model.SapTechnincal;
+
 
 /**
  *
@@ -121,20 +116,55 @@ public class Partner implements Serializable {
     private Collection<Comment> comments;
     @OneToMany(mappedBy = "partner", cascade = CascadeType.ALL, orphanRemoval = true)
     private Collection<Contact> contacts;
-    
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     private SapUpdate sapUpdate;
 
     public Partner() {
         this.status = true;
-        
         this.insap = false; //handle this in sap sync;
+        this.contacts = new ArrayList<>();
+        this.technicls = new ArrayList<>();
+        this.comments = new ArrayList<>();
     }
 
     public Partner(boolean inSap) {
         this();
         this.insap = inSap; //handle this in sap sync;
+
+    }
+
+    //copy constructor
+    public Partner(Partner copy) {
+        this.b2bManager = copy.b2bManager;
+        this.city = copy.city;
+        this.country = copy.country;
+        this.partnerGroup = copy.partnerGroup;
+        this.partnerName = copy.partnerName;
+        this.partnerType = copy.partnerType;
+        this.region = copy.region;
+        this.salesOrg = copy.salesOrg;
+        this.status = true;
+        this.updateTime = new Date();
+        this.contacts = new ArrayList<>();
+        this.technicls = new ArrayList<>();
+        this.comments = new ArrayList<>();
+        this.partnerNumber = null;
         
+        Contact c;
+        Technical t;
+        for (Contact contact : copy.contacts) {
+            c = new Contact(contact);
+            c.setPartner(this);
+            this.contacts.add(c);
+        }
+        for (Technical technicl : copy.technicls) {
+            t = new Technical(technicl);
+            t.setPartner(this);
+            this.technicls.add(t);
+
+        }
+
     }
 
     public String getRegion() {
@@ -288,154 +318,66 @@ public class Partner implements Serializable {
             return false;
         }
         final Partner other = (Partner) obj;
-//        if (!Objects.equals(this.partnerNumber, other.partnerNumber)) {
-//            return false;
-//        }
+//      
         if (!Objects.equals(this.partnerId, other.partnerId)) {
             return false;
         }
+        
+        if(Objects.equals(this.partnerId, other.partnerId)){
+            if(this.partnerId != null && other.partnerId != null){
+                return true;
+            }else{
+                
+                return this == obj;
+            }
+        }
         return true;
+    }
+    
+    public boolean equalsByNumber(Partner obj){
+        if(this.partnerNumber == null || obj.partnerNumber == null) return false;
+        if(this.partnerNumber.equals(obj.partnerNumber)) return true;
+        return false;
+    }
+    
+    public void update(Partner p){
+        if(this.equalsByNumber(p)){ // only update if its equal by partnerNumber
+            if(p.country != null){
+                this.country = p.country;
+            }
+            if(p.partnerName != null){
+                this.partnerName = p.partnerName;
+            }
+            if(p.salesOrg != null){
+                this.salesOrg = p.salesOrg;
+            }
+            if(p.technicls != null){
+                for (Technical tec : p.technicls) {
+                    if( !this.technicls.stream().anyMatch(t->t.equalsByDirectionAndMessage(tec))){
+                        tec.setPartner(this);
+                        this.technicls.add(tec); // append the techincal to update the partner. 
+                    }
+                }
+            }
+            
+            if(p.contacts != null){
+                for (Contact con : p.contacts) {
+                    if(!this.contacts.stream().anyMatch(c->c.equalsByNameAndType(con))){
+                        con.setPartner(this);
+                        this.contacts.add(con); //apend the contact;
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public String toString() {
         return partnerName;
     }
-    
-    
-    
 
-    public Partner clone() {
-        Partner p = new Partner();
-        p.b2bManager = this.b2bManager;
-        p.city = this.city;
-        p.country = this.country;
-        p.partnerGroup = this.partnerGroup;
-        p.partnerName = this.partnerName;
-        p.partnerNumber = null;
-        p.partnerType = this.partnerType;
-        p.region = this.region;
-        p.salesOrg = this.salesOrg;
-        p.status = true;
-        p.updateTime = new Date();
-        p.contacts = new ArrayList<>();
-        p.technicls = new ArrayList<>();
-        p.comments = new ArrayList<>();
-        Contact c;
-        Technical t;
-        Comment com;
-        for (Contact contact : this.contacts) {
-            c = contact.clone();
-            c.setPartner(p);
-            p.contacts.add(c);
-        }
-        for (Technical technicl : this.technicls) {
-            t = technicl.clone();
-            t.setPartner(p);
-            p.technicls.add(t);
+   
 
-        }
-//        for (Comment comment : comments) {
-//            com = comment.clone();
-//            com.setParnter(p);
-//            p.comments.add(com);
-//
-//        }
-        return p;
-
-    }
-
-    public boolean isSyncedWithSap(SapPartner sapPartner) {
-        if (this.partnerNumber.equals("0004000197")) {
-            System.out.println("got it ");
-        }
-        if (!this.partnerNumber.equals(sapPartner.getCustomerNumber())) {
-            return false;
-        }
-        if (!this.partnerName.equals(sapPartner.getName())
-                || (this.city != null && !this.city.equals(sapPartner.getCity()))) {
-            return false;
-        }
-        if (this.contacts == null && sapPartner.getDescription() != null) { // contacts check
-            return false;
-        }
-
-        if (sapPartner.getDescription() != null && this.contacts != null) { // contacts check
-
-            if (!contacts.stream().filter(c -> c.getContactName() != null).anyMatch(c -> c.getContactName().equalsIgnoreCase(sapPartner.getDescription()))) {
-                return false;
-            }
-        }
-
-        if (this.technicls == null) {  //technical part
-            return false;
-        } else {
-
-            for (SapTechnincal sapTech : sapPartner.getTechnicals()) {
-
-                try {
-                    if (!this.technicls.stream().filter(tech -> tech.getTechTerms() != null && tech.getTechTerms().equals(sapTech.getTechTerms())).findFirst().isPresent()) {
-                        return false;
-                    }
-
-//                    if (!this.technicls.stream().anyMatch(tech ->  tech.getTechTerms().equals(sapTech.getTechTerms()))) {
-//                        return false;
-//                    }
-                } catch (Exception e) {
-                    for (Technical technicl : technicls) {
-                        System.out.println(technicl);
-                    }
-                    System.out.println("Null Exception");
-                }
-
-            }
-        }
-
-        return true;
-    }
-
-    public void updateWithSap(SapPartner sapPartner,SapUpdate sapUpdate) {
-        this.updateTime = new Date();
-        this.insap = true;
-        this.setPartnerName(sapPartner.getName());
-        // this.setB2bManager(sapPartner.getDescription());
-        this.setCity(sapPartner.getCity());
-        this.setPartnerNumber(sapPartner.getCustomerNumber());
-        this.setSapUpdate(sapUpdate);
-        
-
-        if (this.technicls == null) {
-            technicls = new ArrayList<>();
-        }
-
-        if (this.contacts == null) {
-            contacts = new ArrayList<>();
-        }
-
-        for (SapTechnincal sapTech : sapPartner.getTechnicals()) {
-            if (!this.technicls.stream().filter(tech -> tech.getTechTerms() != null && tech.getTechTerms().equals(sapTech.getTechTerms())).findFirst().isPresent()) {
-                Technical newTech = new Technical();
-                newTech.setDirection(sapTech.getType().name());
-                if (sapTech.getType() == Direction.Inbound) {
-                    newTech.setTargetMessage(sapTech.getTechTerms());
-                } else {
-                    newTech.setSourceMessage(sapTech.getTechTerms());
-                }
-                newTech.setPartner(this);
-                this.technicls.add(newTech);
-            }
-        }
-
-        if (sapPartner.getDescription() != null && !contacts.stream().anyMatch(c -> c.getContactName() != null && c.getContactName().equalsIgnoreCase(sapPartner.getDescription()))) {
-            Contact c = new Contact();
-           
-            c.setContactName(sapPartner.getDescription());
-            c.setContactType("IFX BIZ-CLM");
-            c.setPartner(this);
-            this.contacts.add(c);
-        }
-
-    }
 
     public SapUpdate getSapUpdate() {
         return sapUpdate;
@@ -444,10 +386,10 @@ public class Partner implements Serializable {
     public void setSapUpdate(SapUpdate sapUpdate) {
         this.sapUpdate = sapUpdate;
     }
-    
+
     @PreUpdate
     @PrePersist
     public void setLastUpdate() {
-        this.setUpdateTime(new Date() );
+        this.setUpdateTime(new Date());
     }
 }
