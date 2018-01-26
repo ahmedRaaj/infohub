@@ -5,6 +5,7 @@
  */
 package org.infineon.infohub.service.dao;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -43,10 +44,22 @@ public abstract class AbstractFacade<T> {
             getEntityManager().persist(entity);
         }
     }
+    
+    public void create(Collection<T> entities){
+        for (T entity : entities) {
+            getEntityManager().persist(entity);
+        }
+    }
 
     public void edit(T entity) {
         T merge = getEntityManager().merge(entity);
     }
+    public void edit(Collection<T> entities){
+        for (T entity : entities) {
+            getEntityManager().merge(entity);
+        }
+    }
+    
 
     public void remove(T entity) {
         getEntityManager().remove(getEntityManager().merge(entity));

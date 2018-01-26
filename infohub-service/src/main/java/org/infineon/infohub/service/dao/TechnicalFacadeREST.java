@@ -18,7 +18,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import org.infineon.infohub.entities.Partner;
 import org.infineon.infohub.entities.Technical;
+import org.infineon.infohub.service.exception.PartnerNotFoundException;
 
 /**
  *
@@ -65,6 +67,19 @@ public class TechnicalFacadeREST extends AbstractFacade<Technical> {
    
     public List<Technical> findAll() {
         return super.findAll();
+    }
+    
+
+    public List<Technical> findAllByPartner(Partner partner) throws PartnerNotFoundException {
+        if (partner == null || partner.getPartnerId() == null) {
+            throw new PartnerNotFoundException("Partner is null");
+        }
+        return em.createNamedQuery("Technical.findAllByPartner").setParameter("partner", partner).getResultList();
+    }
+
+    public List<Technical> findAllByPartnerId(String partnerId) throws PartnerNotFoundException {
+        Partner found = em.find(Partner.class, partnerId);
+        return this.findAllByPartner(found);
     }
 
     @GET

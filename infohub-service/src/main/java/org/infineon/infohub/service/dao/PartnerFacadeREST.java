@@ -8,8 +8,10 @@ package org.infineon.infohub.service.dao;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.ejb.EJBException;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -269,5 +271,35 @@ public class PartnerFacadeREST extends AbstractFacade<Partner> {
         return list;
 
     }
+    
+    public List<Partner> updateTargetbyWith(List<Partner> target, List<Partner> with){
+        Partner source;
+        for (Partner partner : with) { //iterate each with to update the target
+            if (target.isEmpty()) { //if target empty then just add the partner. 
+                target.add(partner);
+            } else {
+                source = target.parallelStream().filter(p -> p.equalsByNumber(partner)).findFirst().orElse(null);
+                if (source != null) { // partner found in target, so update it. 
+                    source.update(partner);
+                } else {    // add to the target if partner doesnt exit. 
+                    target.add(partner);
+                }
+            }
+        }
+        return target;  //return the updated target. 
+    }
+    
+    
+    public List<Partner> updateTargetbyWith(List<Partner> target, List<Partner> with,boolean ifExistInTarget){
+        Objects.requireNonNull(with);
+        if(!ifExistInTarget){
+           return this.updateTargetbyWith(target, with);
+        }else{
+            //reduce the with with only partner which exist in target.
+            List<Partner> partnersInTarget = with.stream().filter(p->target.stream().anyMatch(t->t.equalsByNumber(p))).collect(Collectors.toList());
+            return this.updateTargetbyWith(target, partnersInTarget);
+        }
+    }
+    
 
 }

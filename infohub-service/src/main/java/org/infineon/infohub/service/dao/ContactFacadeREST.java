@@ -5,6 +5,7 @@
  */
 package org.infineon.infohub.service.dao;
 
+import org.infineon.infohub.service.exception.PartnerNotFoundException;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -72,8 +73,24 @@ public class ContactFacadeREST extends AbstractFacade<Contact> {
 
     @GET
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public List<Contact> findAllByPartner(Partner partner) {
+    public List<Contact> findAllByPartner(Partner partner) throws PartnerNotFoundException {
+        if (partner == null || partner.getPartnerId() == null) {
+            throw new PartnerNotFoundException("Partner is null");
+        }
         return em.createNamedQuery("Contact.findByPartner").setParameter("partner", partner).getResultList();
+    }
+
+    public List<Contact> findAllByPartnerId(String partnerId) throws PartnerNotFoundException {
+        Partner found = em.find(Partner.class, partnerId);
+        return this.findAllByPartner(found);
+    }
+
+    public int countByPartner(Partner p) throws PartnerNotFoundException {
+        if (p == null || p.getPartnerId() == null) {
+            throw new PartnerNotFoundException("Partner is null");
+        }
+        return em.createNamedQuery("Contact.countByPartner").setParameter("partner", p).getFirstResult();
+
     }
 
     @GET

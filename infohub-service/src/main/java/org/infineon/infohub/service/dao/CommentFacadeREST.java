@@ -19,6 +19,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.infineon.infohub.entities.Comment;
+import org.infineon.infohub.entities.Partner;
+import org.infineon.infohub.service.exception.PartnerNotFoundException;
 
 /**
  *
@@ -68,8 +70,13 @@ public class CommentFacadeREST extends AbstractFacade<Comment> {
     public List<Comment> findAll() {
         return super.findAll();
     }
-    
-    
+
+    public List<Comment> findAllByPartner(Partner partner) throws PartnerNotFoundException {
+        if (partner == null || partner.getPartnerId() == null) {
+            throw new PartnerNotFoundException("Partner is null");
+        }
+        return em.createNamedQuery("Comment.findByPartner").setParameter("partner", partner).getResultList();
+    }
 
     @GET
     @Path("{from}/{to}")
@@ -89,5 +96,5 @@ public class CommentFacadeREST extends AbstractFacade<Comment> {
     protected EntityManager getEntityManager() {
         return em;
     }
-    
+
 }
